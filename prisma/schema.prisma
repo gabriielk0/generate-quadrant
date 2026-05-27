@@ -1,0 +1,51 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Team {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  members   Member[]
+}
+
+model Member {
+  id           String   @id @default(uuid())
+  type         String   // "JOVEM" or "CASAL"
+  subcategory  String   // "Casal coordenador", "Casal apoio", "Casais membros", "Jovens apoio", "Jovens coordenadores", "Jovens membros"
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  
+  // Relations
+  teamId       String
+  team         Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  // Jovem-specific fields (optional, validated via Zod)
+  name         String?
+  nickname     String?
+  birthDate    DateTime?
+  phone        String?
+  email        String?
+  address      String?  // Shared with Casal address
+
+  // Casal-specific fields (optional, validated via Zod)
+  homePhone    String?  // Shared home phone (Telefone Residencial)
+  
+  // Husband fields
+  husbandName  String?
+  husbandEmail String?
+  husbandBirthDate DateTime?
+  husbandPhone String?  // Celular (Ele)
+
+  // Wife fields
+  wifeName     String?
+  wifeEmail    String?
+  wifeBirthDate DateTime?
+  wifePhone    String?  // Celular (Ela)
+}

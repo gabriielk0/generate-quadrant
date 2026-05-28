@@ -9,10 +9,13 @@ generator client {
 
 model Team {
   id        String   @id @default(uuid())
-  name      String   @unique
+  name      String
+  system    String   @default("SEGUEME")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   members   Member[]
+
+  @@unique([name, system])
 }
 
 model Member {
@@ -39,12 +42,14 @@ model Member {
   
   // Husband fields
   husbandName  String?
+  husbandNickname String?
   husbandEmail String?
   husbandBirthDate DateTime?
   husbandPhone String?  // Celular (Ele)
 
   // Wife fields
   wifeName     String?
+  wifeNickname String?
   wifeEmail    String?
   wifeBirthDate DateTime?
   wifePhone    String?  // Celular (Ela)

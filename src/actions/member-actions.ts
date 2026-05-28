@@ -18,11 +18,13 @@ const CasalSchema = z.object({
   homePhone: z.string().optional().or(z.literal("")),
   // Husband
   husbandName: z.string().min(3, "Nome do esposo deve ter pelo menos 3 caracteres"),
+  husbandNickname: z.string().optional().or(z.literal("")),
   husbandEmail: z.string().email("E-mail do esposo inválido").or(z.literal("")),
   husbandBirthDate: z.string().min(1, "Data de nascimento do esposo é obrigatória"),
   husbandPhone: z.string().min(1, "Celular do esposo é obrigatório"),
   // Wife
   wifeName: z.string().min(3, "Nome da esposa deve ter pelo menos 3 caracteres"),
+  wifeNickname: z.string().optional().or(z.literal("")),
   wifeEmail: z.string().email("E-mail da esposa inválido").or(z.literal("")),
   wifeBirthDate: z.string().min(1, "Data de nascimento da esposa é obrigatória"),
   wifePhone: z.string().min(1, "Celular da esposa é obrigatório"),
@@ -77,6 +79,7 @@ export async function createMember(
       });
 
       revalidatePath("/");
+      revalidatePath("/ejc");
       return { success: true, member };
     } else if (type === "CASAL") {
       const parsed = CasalSchema.safeParse(rawData);
@@ -91,10 +94,12 @@ export async function createMember(
         address,
         homePhone,
         husbandName,
+        husbandNickname,
         husbandEmail,
         husbandBirthDate,
         husbandPhone,
         wifeName,
+        wifeNickname,
         wifeEmail,
         wifeBirthDate,
         wifePhone,
@@ -108,10 +113,12 @@ export async function createMember(
           address,
           homePhone: homePhone || null,
           husbandName,
+          husbandNickname: husbandNickname || null,
           husbandEmail: husbandEmail || null,
           husbandBirthDate: husbandBirthDate ? new Date(husbandBirthDate + "T00:00:00") : null,
           husbandPhone,
           wifeName,
+          wifeNickname: wifeNickname || null,
           wifeEmail: wifeEmail || null,
           wifeBirthDate: wifeBirthDate ? new Date(wifeBirthDate + "T00:00:00") : null,
           wifePhone,
@@ -119,6 +126,7 @@ export async function createMember(
       });
 
       revalidatePath("/");
+      revalidatePath("/ejc");
       return { success: true, member };
     } else {
       return { error: "Tipo de integrante inválido." };
@@ -128,3 +136,120 @@ export async function createMember(
     return { error: "Ocorreu um erro no servidor ao cadastrar o integrante." };
   }
 }
+
+export async function updateMember(
+  id: string,
+  type: "JOVEM" | "CASAL",
+  subcategory: string,
+  rawData: any
+) {
+  if (!id) {
+    return { error: "O ID do integrante é obrigatório." };
+  }
+  if (!subcategory || subcategory.trim() === "") {
+    return { error: "A subcategoria é obrigatória." };
+  }
+
+  try {
+    if (type === "JOVEM") {
+      const parsed = JovemSchema.safeParse(rawData);
+      if (!parsed.success) {
+        return {
+          error: "Dados inválidos. Por favor, verifique os campos destacados.",
+          fieldErrors: parsed.error.flatten().fieldErrors,
+        };
+      }
+
+      const { name, nickname, birthDate, phone, email, address } = parsed.data;
+
+      const member = await db.member.update({
+        where: { id },
+        data: {
+          type,
+          subcategory,
+          name,
+          nickname,
+          birthDate: birthDate ? new Date(birthDate + "T00:00:00") : null,
+          phone,
+          email: email || null,
+          address,
+          // Reset Casal fields if type is changed to JOVEM
+          homePhone: null,
+          husbandName: null,
+          husbandNickname: null,
+          husbandEmail: null,
+          husbandBirthDate: null,
+          husbandPhone: null,
+          wifeName: null,
+          wifeNickname: null,
+          wifeEmail: null,
+          wifeBirthDate: null,
+          wifePhone: null,
+        },
+      });
+
+      revalidatePath("/");
+      revalidatePath("/ejc");
+      return { success: true, member };
+    } else if (type === "CASAL") {
+      const parsed = CasalSchema.safeParse(rawData);
+      if (!parsed.success) {
+        return {
+          error: "Dados inválidos. Por favor, verifique os campos destacados.",
+          fieldErrors: parsed.error.flatten().fieldErrors,
+        };
+      }
+
+      const {
+        address,
+        homePhone,
+        husbandName,
+        husbandNickname,
+        husbandEmail,
+        husbandBirthDate,
+        husbandPhone,
+        wifeName,
+        wifeNickname,
+        wifeEmail,
+        wifeBirthDate,
+        wifePhone,
+      } = parsed.data;
+
+      const member = await db.member.update({
+        where: { id },
+        data: {
+          type,
+          subcategory,
+          address,
+          homePhone: homePhone || null,
+          husbandName,
+          husbandNickname: husbandNickname || null,
+          husbandEmail: husbandEmail || null,
+          husbandBirthDate: husbandBirthDate ? new Date(husbandBirthDate + "T00:00:00") : null,
+          husbandPhone,
+          wifeName,
+          wifeNickname: wifeNickname || null,
+          wifeEmail: wifeEmail || null,
+          wifeBirthDate: wifeBirthDate ? new Date(wifeBirthDate + "T00:00:00") : null,
+          wifePhone,
+          // Reset Jovem fields if type is changed to CASAL
+          name: null,
+          nickname: null,
+          birthDate: null,
+          phone: null,
+          email: null,
+        },
+      });
+
+      revalidatePath("/");
+      revalidatePath("/ejc");
+      return { success: true, member };
+    } else {
+      return { error: "Tipo de integrante inválido." };
+    }
+  } catch (error: any) {
+    console.error("Erro ao atualizar integrante:", error);
+    return { error: "Ocorreu um erro no servidor ao atualizar o integrante." };
+  }
+}
+

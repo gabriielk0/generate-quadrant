@@ -996,7 +996,7 @@ const teamsData = [
         subcategory: "Casal coordenador",
         wifeName: "Tia Thalita Viana da Silva Matos",
         wifePhone: "(61) 99988-4744",
-        husbandName: "Tio Bruno Galvão" || "Tio Bruno Matos Galvão",
+        husbandName: "Tio Bruno Matos Galvão",
         husbandPhone: "(61) 99988-4733",
         address: "AC 2 lotes 01/02 e 12 Bloco B Apto 601 - Riacho Fundo I",
       },
@@ -1516,18 +1516,19 @@ async function main() {
     });
 
     for (const memberItem of teamItem.members) {
+      const m = memberItem as any;
       await prisma.member.create({
         data: {
-          type: memberItem.type,
-          subcategory: memberItem.subcategory,
+          type: m.type,
+          subcategory: m.subcategory,
           teamId: team.id,
-          name: memberItem.name || null,
-          phone: memberItem.phone || null,
-          address: memberItem.address || null,
-          wifeName: memberItem.wifeName || null,
-          wifePhone: memberItem.wifePhone || null,
-          husbandName: memberItem.husbandName || null,
-          husbandPhone: memberItem.husbandPhone || null,
+          name: m.name || null,
+          phone: m.phone || null,
+          address: m.address || null,
+          wifeName: m.wifeName || null,
+          wifePhone: m.wifePhone || null,
+          husbandName: m.husbandName || null,
+          husbandPhone: m.husbandPhone || null,
         },
       });
     }

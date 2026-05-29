@@ -1487,50 +1487,54 @@ const teamsData = [
 ];
 
 async function main() {
-  console.log("Seeding teams and members for IV EJC Nossa Senhora da Saúde...");
+  const systems = ["SEGUEME", "EJC"];
 
-  for (const teamItem of teamsData) {
-    const team = await prisma.team.upsert({
-      where: {
-        name_system: {
-          name: teamItem.name,
-          system: "SEGUEME",
+  for (const system of systems) {
+    console.log(`Seeding teams and members for ${system}...`);
+
+    for (const teamItem of teamsData) {
+      const team = await prisma.team.upsert({
+        where: {
+          name_system: {
+            name: teamItem.name,
+            system: system,
+          },
         },
-      },
-      update: {},
-      create: {
-        name: teamItem.name,
-        system: "SEGUEME",
-      },
-    });
-
-    console.log(`Team: ${team.name} (ID: ${team.id})`);
-
-    // Clean existing members for this team to avoid seeding duplicate entries on re-run
-    await prisma.member.deleteMany({
-      where: {
-        teamId: team.id,
-      },
-    });
-
-    for (const memberItem of teamItem.members) {
-      const m = memberItem as any;
-      await prisma.member.create({
-        data: {
-          type: m.type,
-          subcategory: m.subcategory,
-          teamId: team.id,
-          name: m.name || null,
-          phone: m.phone || null,
-          address: m.address || null,
-          wifeName: m.wifeName || null,
-          wifePhone: m.wifePhone || null,
-          husbandName: m.husbandName || null,
-          husbandPhone: m.husbandPhone || null,
+        update: {},
+        create: {
+          name: teamItem.name,
+          system: system,
         },
       });
+
+      console.log(`Team: ${team.name} (${system}) (ID: ${team.id})`);
+
+      // Clean existing members for this team to avoid seeding duplicate entries on re-run
+      await prisma.member.deleteMany({
+        where: {
+          teamId: team.id,
+        },
+      });
+
+      for (const memberItem of teamItem.members) {
+        const m = memberItem as any;
+        await prisma.member.create({
+          data: {
+            type: m.type,
+            subcategory: m.subcategory,
+            teamId: team.id,
+            name: m.name || null,
+            phone: m.phone || null,
+            address: m.address || null,
+            wifeName: m.wifeName || null,
+            wifePhone: m.wifePhone || null,
+            husbandName: m.husbandName || null,
+            husbandPhone: m.husbandPhone || null,
+          },
+        });
+      }
+      console.log(`Added ${teamItem.members.length} members.`);
     }
-    console.log(`Added ${teamItem.members.length} members.`);
   }
 
   console.log("Seeding finished successfully!");

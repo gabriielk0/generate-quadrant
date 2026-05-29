@@ -229,13 +229,13 @@ const LGPD_COL_WIDTHS = {
 
 export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
   const subcategoriesOrder = [
+    "Jovens coordenadores",
     "Coordenador(a)",
     "Casal coordenador",
     "Casal",
     "Casal apoio",
-    "Casais membros",
-    "Jovens coordenadores",
     "Jovens apoio",
+    "Casais membros",
     "Jovens membros",
     "Integrantes",
   ];
@@ -400,7 +400,7 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
                     sub.trim().toLowerCase().includes("membros");
 
                   return (
-                    <View key={sub} style={styles.subcategoryContainer} wrap={false}>
+                    <View key={sub} style={styles.subcategoryContainer}>
                       {/* Left-aligned Subcategory Title (navy blue) */}
                       <Text style={styles.subcategoryTitle}>
                         {sub}
@@ -408,11 +408,12 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
 
                       {isIntegrantesSub ? (
                         /* Stacked single-box layout for members */
-                        <View style={styles.memberBox} wrap={false}>
+                        <View style={styles.memberBox}>
                           {members.map((m, idx) => (
                             <View
                               key={m.id}
                               style={idx > 0 ? styles.stackedItemSeparator : undefined}
+                              wrap={false}
                             >
                               {m.type === "JOVEM" ? renderJovemRows(m) : renderCasalRows(m)}
                             </View>
@@ -535,7 +536,7 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
                 if (!subItems || subItems.length === 0) return null;
 
                 return (
-                  <View key={sub} style={styles.subcategoryContainer} wrap={false}>
+                  <View key={sub} style={styles.subcategoryContainer}>
                     {/* Left-aligned Subcategory Title */}
                     <Text style={styles.subcategoryTitle}>
                       {sub}

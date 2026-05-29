@@ -115,13 +115,13 @@ function createCell(label: string, value: string | null | undefined, colSpan: nu
 
 export async function generateWordQuadrantEJC(teams: Team[]) {
   const subcategoriesOrder = [
+    "Jovens coordenadores",
     "Coordenador(a)",
     "Casal coordenador",
     "Casal",
     "Casal apoio",
-    "Casais membros",
-    "Jovens coordenadores",
     "Jovens apoio",
+    "Casais membros",
     "Jovens membros",
     "Integrantes",
   ];

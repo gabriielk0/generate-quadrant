@@ -58,14 +58,27 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
   }));
 
   // Hierarchical order for subcategories
-  const subcategoriesOrder = [
-    "Casal coordenador",
-    "Casal apoio",
-    "Casais membros",
-    "Jovens coordenadores",
-    "Jovens apoio",
-    "Jovens membros",
-  ];
+  const subcategoriesOrder =
+    system === "EJC"
+      ? [
+          "Jovens coordenadores",
+          "Coordenador(a)",
+          "Casal coordenador",
+          "Casal",
+          "Casal apoio",
+          "Jovens apoio",
+          "Casais membros",
+          "Jovens membros",
+          "Integrantes",
+        ]
+      : [
+          "Casal coordenador",
+          "Casal apoio",
+          "Casais membros",
+          "Jovens coordenadores",
+          "Jovens apoio",
+          "Jovens membros",
+        ];
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-zinc-950 p-6 md:p-12">

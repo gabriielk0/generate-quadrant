@@ -66,13 +66,13 @@ export async function generateExcelQuadrantEJC(teams: Team[]) {
   const workbook = new ExcelJS.Workbook();
   
   const subcategoriesOrder = [
+    "Jovens coordenadores",
     "Coordenador(a)",
     "Casal coordenador",
     "Casal",
     "Casal apoio",
-    "Casais membros",
-    "Jovens coordenadores",
     "Jovens apoio",
+    "Casais membros",
     "Jovens membros",
     "Integrantes",
   ];

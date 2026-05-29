@@ -269,7 +269,7 @@ export function QuadrantePDFDocument({ teams, modo }: QuadrantePDFDocumentProps)
                 {activeSubcategories.map((sub) => {
                   const members = grouped[sub];
                   return (
-                    <View key={sub} wrap={false} style={styles.subcategoryContainer}>
+                    <View key={sub} style={styles.subcategoryContainer}>
                       {/* Subcategory Separator Title - strictly the subcategory name */}
                       <Text style={styles.subcategoryTitle}>
                         {sub}

@@ -164,6 +164,15 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
       groups[m.subcategory].push(m);
     });
 
+    // Sort members within each subcategory alphabetically
+    Object.keys(groups).forEach((sub) => {
+      groups[sub].sort((a, b) => {
+        const nameA = a.type === "JOVEM" ? (a.name || "") : (a.husbandName || a.wifeName || "");
+        const nameB = b.type === "JOVEM" ? (b.name || "") : (b.husbandName || b.wifeName || "");
+        return nameA.localeCompare(nameB, "pt-BR");
+      });
+    });
+
     return groups;
   };
 
@@ -202,17 +211,19 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
       }
     });
 
-    // Apply search filter
+    // Apply search filter and sort alphabetically by name
     const search = searchQuery.toLowerCase().trim();
-    if (!search) return list;
+    const filteredList = search
+      ? list.filter(
+          (item) =>
+            item.name.toLowerCase().includes(search) ||
+            item.roleOrNickname.toLowerCase().includes(search) ||
+            item.subcategory.toLowerCase().includes(search)
+        )
+      : list;
 
-    return list.filter(
-      (item) =>
-          item.name.toLowerCase().includes(search) ||
-          item.roleOrNickname.toLowerCase().includes(search) ||
-          item.subcategory.toLowerCase().includes(search)
-      );
-    };
+    return filteredList.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
+  };
   
     const isDirigenteTeam = selectedTeam && (
       selectedTeam.name === "Equipe Dirigente" || 

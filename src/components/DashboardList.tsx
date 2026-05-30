@@ -170,6 +170,15 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
                   grouped[m.subcategory].push(m);
                 });
 
+                // Sort members within each subcategory alphabetically
+                Object.keys(grouped).forEach((sub) => {
+                  grouped[sub].sort((a, b) => {
+                    const nameA = a.type === "JOVEM" ? (a.name || "") : (a.husbandName || a.wifeName || "");
+                    const nameB = b.type === "JOVEM" ? (b.name || "") : (b.husbandName || b.wifeName || "");
+                    return nameA.localeCompare(nameB, "pt-BR");
+                  });
+                });
+
                 // Get subcategories that have members, sorted with custom ones at the end
                 const activeSubcategories = Object.keys(grouped).sort((a, b) => {
                   const idxA = subcategoriesOrder.indexOf(a);

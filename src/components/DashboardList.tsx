@@ -1,6 +1,8 @@
 import React from "react";
 import { db } from "@/lib/db";
 import { PDFExportButtons } from "./PDFExportButtons";
+import { TeamExportButtons } from "./TeamExportButtons";
+import { TeamDirigenteTabs } from "./TeamDirigenteTabs";
 import Link from "next/link";
 
 // Date formatter helper (DD/MM/YYYY)
@@ -61,6 +63,16 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
   const subcategoriesOrder =
     system === "EJC"
       ? [
+          "Montagem",
+          "Finanças",
+          "Palestra",
+          "Fichas",
+          "Pós-Encontro",
+          "Círculo Amarelo",
+          "Círculo Azul",
+          "Círculo Rosa",
+          "Círculo Verde",
+          "Círculo Vermelho",
           "Jovens coordenadores",
           "Coordenador(a)",
           "Casal coordenador",
@@ -72,6 +84,16 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
           "Integrantes",
         ]
       : [
+          "Montagem",
+          "Finanças",
+          "Palestra",
+          "Fichas",
+          "Pós-Encontro",
+          "Círculo Amarelo",
+          "Círculo Azul",
+          "Círculo Rosa",
+          "Círculo Verde",
+          "Círculo Vermelho",
           "Casal coordenador",
           "Casal apoio",
           "Casais membros",
@@ -178,27 +200,32 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
                         </div>
                       </div>
 
-                      <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 rounded-xl group-open:hidden border border-gray-200 dark:border-zinc-700">
-                          Expandir
-                        </span>
-                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-zinc-800 px-3 py-1.5 rounded-xl hidden group-open:inline border border-gray-150 dark:border-zinc-755">
-                          Recolher
-                        </span>
-                        <svg
-                          className="h-5 w-5 text-gray-400 transform group-open:rotate-180 transition-transform duration-200"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                        >
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
-                        </svg>
+                      <div className="flex items-center gap-4">
+                        <TeamExportButtons team={team} system={system} />
+                        <div className="flex items-center gap-3">
+                          <span className="text-xs font-bold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-zinc-800 px-3 py-1.5 rounded-xl group-open:hidden border border-gray-200 dark:border-zinc-700">
+                            Expandir
+                          </span>
+                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-zinc-800 px-3 py-1.5 rounded-xl hidden group-open:inline border border-gray-150 dark:border-zinc-755">
+                            Recolher
+                          </span>
+                          <svg
+                            className="h-5 w-5 text-gray-400 transform group-open:rotate-180 transition-transform duration-200"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth="2.5"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
                       </div>
                     </summary>
 
                     <div className="p-6 border-t border-gray-150 dark:border-zinc-850 bg-gray-50/10 dark:bg-zinc-950/10 space-y-10">
-                      {activeSubcategories.length === 0 ? (
+                      {team.name === "Equipe Dirigente" || team.name === "Equipe de Dirigentes" || team.name === "Círculos" || team.name === "Círculo" ? (
+                        <TeamDirigenteTabs team={team} system={system} />
+                      ) : activeSubcategories.length === 0 ? (
                         <div className="text-center py-10 text-gray-400 text-sm">
                           Nenhum integrante cadastrado nesta equipe.
                         </div>
@@ -246,7 +273,11 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
                                               {isJovem ? m.name : `${m.husbandName} & ${m.wifeName}`}
                                             </h4>
                                             <p className="text-xs text-gray-400 dark:text-gray-500 font-semibold mt-0.5">
-                                              {isJovem ? `Jovem • ${m.nickname}` : "Casal"}
+                                              {isJovem
+                                                ? system === "EJC"
+                                                  ? "Jovem"
+                                                  : `Jovem • ${m.nickname}`
+                                                : "Casal"}
                                             </p>
                                           </div>
                                         </div>
@@ -256,15 +287,17 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
                                       <div className="space-y-3">
                                         {isJovem ? (
                                           <div className="text-xs space-y-2 text-gray-650 dark:text-gray-350">
-                                            <div className="flex items-center gap-2">
-                                              <span className="text-gray-400 w-16">Nascimento:</span>
-                                              <span className="font-bold text-gray-900 dark:text-gray-100">{formatDate(m.birthDate)}</span>
-                                            </div>
+                                            {system !== "EJC" && (
+                                              <div className="flex items-center gap-2">
+                                                <span className="text-gray-400 w-16">Nascimento:</span>
+                                                <span className="font-bold text-gray-900 dark:text-gray-100">{formatDate(m.birthDate)}</span>
+                                              </div>
+                                            )}
                                             <div className="flex items-center gap-2">
                                               <span className="text-gray-400 w-16">Telefone:</span>
                                               <span className="font-bold text-gray-900 dark:text-gray-100">{m.phone}</span>
                                             </div>
-                                            {m.email && (
+                                            {system !== "EJC" && m.email && (
                                               <div className="flex items-center gap-2 min-w-0">
                                                 <span className="text-gray-400 w-16">E-mail:</span>
                                                 <span className="font-bold text-gray-900 dark:text-gray-100 truncate" title={m.email}>{m.email}</span>
@@ -283,7 +316,7 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
                                                 <span className="text-gray-400 shrink-0">End:</span>
                                                 <span className="font-semibold text-gray-800 dark:text-gray-200 leading-tight">{m.address}</span>
                                               </div>
-                                              {m.homePhone && (
+                                              {system !== "EJC" && m.homePhone && (
                                                 <div className="flex items-center gap-1">
                                                   <span className="text-gray-400">Fixo:</span>
                                                   <span className="font-semibold text-gray-800 dark:text-gray-200">{m.homePhone}</span>
@@ -296,14 +329,18 @@ export async function DashboardList({ system = "SEGUEME" }: { system?: "SEGUEME"
                                               {/* Husband Column */}
                                               <div className="p-2 bg-gray-50/20 dark:bg-zinc-850/10 rounded-xl border border-gray-200 dark:border-zinc-800/80 space-y-1.5">
                                                 <p className="font-bold text-gray-800 dark:text-gray-300 truncate">Ele ({m.husbandName?.split(" ")[0]})</p>
-                                                <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-200">{formatDate(m.husbandBirthDate)}</span></p>
+                                                {system !== "EJC" && (
+                                                  <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-200">{formatDate(m.husbandBirthDate)}</span></p>
+                                                )}
                                                 <p className="text-gray-500 truncate">Cel: <span className="font-semibold text-gray-800 dark:text-gray-200">{m.husbandPhone}</span></p>
                                               </div>
 
                                               {/* Wife Column */}
                                               <div className="p-2 bg-gray-50/20 dark:bg-zinc-850/10 rounded-xl border border-gray-200 dark:border-zinc-800/80 space-y-1.5">
                                                 <p className="font-bold text-gray-800 dark:text-gray-300 truncate">Ela ({m.wifeName?.split(" ")[0]})</p>
-                                                <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-200">{formatDate(m.wifeBirthDate)}</span></p>
+                                                {system !== "EJC" && (
+                                                  <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-200">{formatDate(m.wifeBirthDate)}</span></p>
+                                                )}
                                                 <p className="text-gray-500 truncate">Cel: <span className="font-semibold text-gray-800 dark:text-gray-200">{m.wifePhone}</span></p>
                                               </div>
                                             </div>

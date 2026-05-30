@@ -8,6 +8,7 @@ import { ArrowLeft, Pencil, Plus, Search, Eye, Lock } from "lucide-react";
 import { generateExcelQuadrant } from "@/lib/excel-generator";
 import { generateWordQuadrant } from "@/lib/word-generator";
 import { PDFExportButtons } from "./PDFExportButtons";
+import { TeamExportButtons } from "./TeamExportButtons";
 
 
 interface Member {
@@ -72,6 +73,11 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
   const [editingMember, setEditingMember] = useState<Member | null>(null);
   const [isGeneratingExcel, setIsGeneratingExcel] = useState(false);
   const [isGeneratingWord, setIsGeneratingWord] = useState(false);
+  const [activeDirigenteTab, setActiveDirigenteTab] = useState<string | null>(null);
+
+  React.useEffect(() => {
+    setActiveDirigenteTab(null);
+  }, [selectedTeamId]);
 
 
   // Sync state with props when Server Component updates
@@ -83,6 +89,48 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
   }, [initialTeams]);
 
   const selectedTeam = teams.find((t) => t.id === selectedTeamId);
+
+  const subcategoriesOrder =
+    system === "EJC"
+      ? [
+          "Montagem",
+          "Finanças",
+          "Palestra",
+          "Fichas",
+          "Pós-Encontro",
+          "Círculo Amarelo",
+          "Círculo Azul",
+          "Círculo Rosa",
+          "Círculo Verde",
+          "Círculo Vermelho",
+          "Jovens coordenadores",
+          "Coordenador(a)",
+          "Casal coordenador",
+          "Casal",
+          "Casal apoio",
+          "Jovens apoio",
+          "Casais membros",
+          "Jovens membros",
+          "Integrantes",
+        ]
+      : [
+          "Montagem",
+          "Finanças",
+          "Palestra",
+          "Fichas",
+          "Pós-Encontro",
+          "Círculo Amarelo",
+          "Círculo Azul",
+          "Círculo Rosa",
+          "Círculo Verde",
+          "Círculo Vermelho",
+          "Casal coordenador",
+          "Casal apoio",
+          "Casais membros",
+          "Jovens coordenadores",
+          "Jovens apoio",
+          "Jovens membros",
+        ];
 
   // Group members of the selected team by subcategory
   const getGroupedMembers = (members: Member[]) => {
@@ -160,11 +208,31 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
 
     return list.filter(
       (item) =>
-        item.name.toLowerCase().includes(search) ||
-        item.roleOrNickname.toLowerCase().includes(search) ||
-        item.subcategory.toLowerCase().includes(search)
+          item.name.toLowerCase().includes(search) ||
+          item.roleOrNickname.toLowerCase().includes(search) ||
+          item.subcategory.toLowerCase().includes(search)
+      );
+    };
+  
+    const isDirigenteTeam = selectedTeam && (
+      selectedTeam.name === "Equipe Dirigente" || 
+      selectedTeam.name === "Equipe de Dirigentes" ||
+      selectedTeam.name === "Círculos" ||
+      selectedTeam.name === "Círculo"
     );
-  };
+  const grouped = selectedTeam ? getGroupedMembers(selectedTeam.members) : {};
+  const activeSubcategories = Object.keys(grouped).sort((a, b) => {
+    const idxA = subcategoriesOrder.indexOf(a);
+    const idxB = subcategoriesOrder.indexOf(b);
+    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+    if (idxA !== -1) return -1;
+    if (idxB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+
+  const currentTab = activeDirigenteTab && activeSubcategories.includes(activeDirigenteTab)
+    ? activeDirigenteTab
+    : (activeSubcategories[0] || null);
 
   return (
     <div className="flex flex-1 flex-col lg:flex-row h-full min-h-screen bg-gray-50 dark:bg-zinc-950">
@@ -284,93 +352,35 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
 
               <div className="flex items-center gap-3">
                 {/* View Mode Toggle */}
-                <div className="flex bg-gray-100 dark:bg-zinc-850 p-1 rounded-xl">
-                  <button
-                    onClick={() => setViewMode("COMPLETA")}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
-                      viewMode === "COMPLETA"
-                        ? "bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm"
-                        : "text-gray-500 hover:text-gray-900 dark:text-gray-450"
-                    }`}
-                  >
-                    <Eye className="h-3.5 w-3.5" />
-                    Ficha Completa
-                  </button>
-                  <button
-                    onClick={() => setViewMode("LGPD")}
-                    className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
-                      viewMode === "LGPD"
-                        ? "bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm"
-                        : "text-gray-500 hover:text-gray-900 dark:text-gray-450"
-                    }`}
-                  >
-                    <Lock className="h-3.5 w-3.5" />
-                    Ficha LGPD (Reduzida)
-                  </button>
-                </div>
-
-                {/* Excel and Word Export Buttons for Segue-me / EJC Export Buttons */}
-                {system === "EJC" ? (
-                  <PDFExportButtons teams={[selectedTeam]} system="EJC" />
-                ) : (
-                  <>
-                    {/* Excel Export Button */}
+                {system !== "EJC" && (
+                  <div className="flex bg-gray-100 dark:bg-zinc-850 p-1 rounded-xl">
                     <button
-                      onClick={async () => {
-                        setIsGeneratingExcel(true);
-                        try {
-                          if (selectedTeam) {
-                            await generateExcelQuadrant([selectedTeam]);
-                          }
-                        } catch (err) {
-                          console.error("Erro ao gerar Excel:", err);
-                        } finally {
-                          setIsGeneratingExcel(false);
-                        }
-                      }}
-                      disabled={isGeneratingExcel}
-                      className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 shrink-0 ${
-                        isGeneratingExcel
-                          ? "bg-emerald-300 dark:bg-emerald-900/50 text-emerald-100 cursor-wait"
-                          : "bg-emerald-600 hover:bg-emerald-550 text-white"
+                      onClick={() => setViewMode("COMPLETA")}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                        viewMode === "COMPLETA"
+                          ? "bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm"
+                          : "text-gray-500 hover:text-gray-900 dark:text-gray-450"
                       }`}
-                      title="Exportar dados desta equipe para planilha Excel"
                     >
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      {isGeneratingExcel ? "Exportando..." : "Exportar Excel"}
+                      <Eye className="h-3.5 w-3.5" />
+                      Ficha Completa
                     </button>
-
-                    {/* Word Export Button */}
                     <button
-                      onClick={async () => {
-                        setIsGeneratingWord(true);
-                        try {
-                          if (selectedTeam) {
-                            await generateWordQuadrant([selectedTeam]);
-                          }
-                        } catch (err) {
-                          console.error("Erro ao gerar Word:", err);
-                        } finally {
-                          setIsGeneratingWord(false);
-                        }
-                      }}
-                      disabled={isGeneratingWord}
-                      className={`px-3.5 py-2 text-xs font-semibold rounded-xl transition-all shadow-sm flex items-center gap-1.5 shrink-0 ${
-                        isGeneratingWord
-                          ? "bg-blue-300 dark:bg-blue-900/50 text-blue-100 cursor-wait"
-                          : "bg-blue-600 hover:bg-blue-550 text-white"
+                      onClick={() => setViewMode("LGPD")}
+                      className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5 ${
+                        viewMode === "LGPD"
+                          ? "bg-white dark:bg-zinc-700 text-gray-900 dark:text-white shadow-sm"
+                          : "text-gray-500 hover:text-gray-900 dark:text-gray-450"
                       }`}
-                      title="Exportar dados desta equipe para documento Word"
                     >
-                      <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                      </svg>
-                      {isGeneratingWord ? "Exportando..." : "Exportar Word"}
+                      <Lock className="h-3.5 w-3.5" />
+                      Ficha LGPD (Reduzida)
                     </button>
-                  </>
+                  </div>
                 )}
+
+                {/* Excel, Word, and PDF Export Buttons for the selected team */}
+                <TeamExportButtons team={selectedTeam} system={system} />
 
                 {!isMemberFormOpen && (
                   <button
@@ -447,131 +457,164 @@ export function Dashboard({ initialTeams, system = "SEGUEME" }: DashboardProps) 
                   ) : viewMode === "COMPLETA" ? (
                     /* VIEW: COMPLETA (Grouped by Subcategory) */
                     <div className="space-y-10">
-                      {Object.entries(getGroupedMembers(selectedTeam.members)).map(([sub, list]) => (
-                        <div key={sub} className="space-y-4">
-                          <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-150 dark:border-zinc-850 pb-2">
-                            {sub} ({list.length})
-                          </h3>
+                      {isDirigenteTeam && (
+                        <div className="flex flex-wrap gap-2 border-b border-gray-250 dark:border-zinc-800 pb-3">
+                          {activeSubcategories.map((sub) => {
+                            const isActive = currentTab === sub;
+                            return (
+                              <button
+                                key={sub}
+                                type="button"
+                                onClick={() => setActiveDirigenteTab(sub)}
+                                className={`px-4 py-2 text-xs font-semibold rounded-xl transition-all border ${
+                                  isActive
+                                    ? "bg-gray-800 text-white border-gray-800 dark:bg-zinc-150 dark:text-zinc-900 dark:border-zinc-150 shadow-sm"
+                                    : "bg-white hover:bg-gray-150 text-gray-700 border-gray-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 dark:text-gray-300 dark:border-zinc-800"
+                                }`}
+                              >
+                                {sub} ({grouped[sub].length})
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
 
-                          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                            {list.map((m) => {
-                              const isJovem = m.type === "JOVEM";
-                              return (
-                                <div
-                                  key={m.id}
-                                  className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm p-6 flex flex-col transition-all hover:shadow-md hover:border-gray-300 dark:hover:border-zinc-700"
-                                >
-                                  {/* Card Header */}
-                                  <div className="flex items-start justify-between mb-4 gap-3">
-                                    <div className="flex items-center gap-3">
-                                      <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
-                                        {isJovem ? (
-                                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                          </svg>
-                                        ) : (
-                                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-                                          </svg>
-                                        )}
-                                      </div>
-                                      <div className="min-w-0">
-                                        <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">
-                                          {isJovem ? m.name : `${m.husbandName} & ${m.wifeName}`}
-                                        </h4>
-                                        <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
-                                          {isJovem ? `Jovem • ${m.nickname}` : "Casal"}
-                                        </p>
-                                      </div>
-                                    </div>
+                      {Object.entries(grouped)
+                        .filter(([sub]) => !isDirigenteTeam || sub === currentTab)
+                        .map(([sub, list]) => (
+                          <div key={sub} className="space-y-4">
+                            <h3 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider border-b border-gray-150 dark:border-zinc-850 pb-2">
+                              {sub} ({list.length})
+                            </h3>
 
-                                    {/* Action Buttons & Tag */}
-                                    <div className="flex items-center gap-2 shrink-0">
-                                      {/* Edit Member button */}
-                                      <button
-                                        onClick={() => {
-                                          setEditingMember(m);
-                                          setIsMemberFormOpen(true);
-                                        }}
-                                        className="p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-zinc-800 rounded-lg transition-all"
-                                        title="Editar Integrante"
-                                      >
-                                        <Pencil className="h-3.5 w-3.5" />
-                                      </button>
-                                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-zinc-700">
-                                        {isJovem ? "Solteiro" : "Casal"}
-                                      </span>
-                                    </div>
-                                  </div>
-
-                                  {/* Card Content */}
-                                  <div className="space-y-4 flex-1">
-                                    {isJovem ? (
-                                      /* Jovem Details */
-                                      <div className="space-y-2.5 text-xs text-gray-650 dark:text-gray-350">
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-gray-400 w-16">Nascimento:</span>
-                                          <span className="font-semibold text-gray-900 dark:text-gray-150">{formatDate(m.birthDate)}</span>
-                                        </div>
-                                        <div className="flex items-center gap-2">
-                                          <span className="text-gray-400 w-16">Telefone:</span>
-                                          <span className="font-semibold text-gray-900 dark:text-gray-150">{m.phone}</span>
-                                        </div>
-                                        {m.email && (
-                                          <div className="flex items-center gap-2 min-w-0">
-                                            <span className="text-gray-400 w-16">E-mail:</span>
-                                            <span className="font-semibold text-gray-900 dark:text-gray-150 truncate" title={m.email}>{m.email}</span>
-                                          </div>
-                                        )}
-                                        <div className="flex items-start gap-1 pt-2 border-t border-gray-100 dark:border-zinc-850">
-                                          <span className="text-gray-400 shrink-0">Endereço:</span>
-                                          <span className="font-medium text-gray-800 dark:text-gray-300 leading-tight">{m.address}</span>
-                                        </div>
-                                      </div>
-                                    ) : (
-                                      /* Casal Details */
-                                      <div className="space-y-4">
-                                        {/* Shared info block */}
-                                        <div className="bg-gray-50/50 dark:bg-zinc-950/40 p-2.5 rounded-xl border border-gray-200/60 dark:border-zinc-850 text-xs space-y-1.5 text-gray-650 dark:text-gray-350">
-                                          <div className="flex items-start gap-1">
-                                            <span className="text-gray-400 shrink-0">End:</span>
-                                            <span className="font-semibold text-gray-800 dark:text-gray-200 leading-tight">{m.address}</span>
-                                          </div>
-                                          {m.homePhone && (
-                                            <div className="flex items-center gap-1">
-                                              <span className="text-gray-400">Fone Fixo:</span>
-                                              <span className="font-semibold text-gray-800 dark:text-gray-200">{m.homePhone}</span>
-                                            </div>
+                            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                              {list.map((m) => {
+                                const isJovem = m.type === "JOVEM";
+                                return (
+                                  <div
+                                    key={m.id}
+                                    className="rounded-2xl border border-gray-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-sm p-6 flex flex-col transition-all hover:shadow-md hover:border-gray-300 dark:hover:border-zinc-700"
+                                  >
+                                    {/* Card Header */}
+                                    <div className="flex items-start justify-between mb-4 gap-3">
+                                      <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 rounded-xl flex items-center justify-center font-bold bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300">
+                                          {isJovem ? (
+                                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                            </svg>
+                                          ) : (
+                                            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
                                           )}
                                         </div>
-
-                                        {/* Individual columns */}
-                                        <div className="grid grid-cols-2 gap-3 text-[11px]">
-                                          {/* Husband Details */}
-                                          <div className="p-2.5 bg-gray-50/20 dark:bg-zinc-850/10 rounded-xl border border-gray-200/50 dark:border-zinc-800/80 space-y-1.5">
-                                            <p className="font-bold text-gray-800 dark:text-gray-350 truncate">Ele ({m.husbandName?.split(" ")[0]})</p>
-                                            <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-205">{formatDate(m.husbandBirthDate)}</span></p>
-                                            <p className="text-gray-500 truncate">Cel: <span className="font-semibold text-gray-800 dark:text-gray-205">{m.husbandPhone}</span></p>
-                                            {m.husbandEmail && <p className="text-gray-500 truncate" title={m.husbandEmail}>Email: <span className="font-semibold text-gray-800 dark:text-gray-205">{m.husbandEmail}</span></p>}
-                                          </div>
-
-                                          {/* Wife Details */}
-                                          <div className="p-2.5 bg-gray-50/20 dark:bg-zinc-850/10 rounded-xl border border-gray-200/50 dark:border-zinc-800/80 space-y-1.5">
-                                            <p className="font-bold text-gray-800 dark:text-gray-350 truncate">Ela ({m.wifeName?.split(" ")[0]})</p>
-                                            <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-205">{formatDate(m.wifeBirthDate)}</span></p>
-                                            <p className="text-gray-500 truncate">Cel: <span className="font-semibold text-gray-800 dark:text-gray-205">{m.wifePhone}</span></p>
-                                            {m.wifeEmail && <p className="text-gray-500 truncate" title={m.wifeEmail}>Email: <span className="font-semibold text-gray-800 dark:text-gray-205">{m.wifeEmail}</span></p>}
-                                          </div>
+                                        <div className="min-w-0">
+                                          <h4 className="font-bold text-gray-900 dark:text-white truncate text-sm">
+                                            {isJovem ? m.name : `${m.husbandName} & ${m.wifeName}`}
+                                          </h4>
+                                          <p className="text-xs text-gray-400 dark:text-gray-500 font-medium">
+                                            {isJovem
+                                              ? system === "EJC"
+                                                ? "Jovem"
+                                                : `Jovem • ${m.nickname}`
+                                              : "Casal"}
+                                          </p>
                                         </div>
                                       </div>
-                                    )}
+
+                                      {/* Action Buttons & Tag */}
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        {/* Edit Member button */}
+                                        <button
+                                          onClick={() => {
+                                            setEditingMember(m);
+                                            setIsMemberFormOpen(true);
+                                          }}
+                                          className="p-1.5 text-gray-400 hover:text-gray-800 hover:bg-gray-100 dark:hover:text-gray-200 dark:hover:bg-zinc-800 rounded-lg transition-all"
+                                          title="Editar Integrante"
+                                        >
+                                          <Pencil className="h-3.5 w-3.5" />
+                                        </button>
+                                        <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-zinc-700">
+                                          {isJovem ? "Solteiro" : "Casal"}
+                                        </span>
+                                      </div>
+                                    </div>
+
+                                    {/* Card Content */}
+                                    <div className="space-y-4 flex-1">
+                                      {isJovem ? (
+                                        /* Jovem Details */
+                                        <div className="space-y-2.5 text-xs text-gray-650 dark:text-gray-350">
+                                          {system !== "EJC" && (
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-gray-400 w-16">Nascimento:</span>
+                                              <span className="font-semibold text-gray-900 dark:text-gray-150">{formatDate(m.birthDate)}</span>
+                                            </div>
+                                          )}
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-gray-400 w-16">Telefone:</span>
+                                            <span className="font-semibold text-gray-900 dark:text-gray-150">{m.phone}</span>
+                                          </div>
+                                          {system !== "EJC" && m.email && (
+                                            <div className="flex items-center gap-2 min-w-0">
+                                              <span className="text-gray-400 w-16">E-mail:</span>
+                                              <span className="font-semibold text-gray-900 dark:text-gray-150 truncate" title={m.email}>{m.email}</span>
+                                            </div>
+                                          )}
+                                          <div className="flex items-start gap-1 pt-2 border-t border-gray-100 dark:border-zinc-850">
+                                            <span className="text-gray-400 shrink-0">Endereço:</span>
+                                            <span className="font-medium text-gray-800 dark:text-gray-300 leading-tight">{m.address}</span>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        /* Casal Details */
+                                        <div className="space-y-4">
+                                          {/* Shared info block */}
+                                          <div className="bg-gray-50/50 dark:bg-zinc-950/40 p-2.5 rounded-xl border border-gray-200/60 dark:border-zinc-850 text-xs space-y-1.5 text-gray-650 dark:text-gray-350">
+                                            <div className="flex items-start gap-1">
+                                              <span className="text-gray-400 shrink-0">End:</span>
+                                              <span className="font-semibold text-gray-800 dark:text-gray-200 leading-tight">{m.address}</span>
+                                            </div>
+                                            {system !== "EJC" && m.homePhone && (
+                                              <div className="flex items-center gap-1">
+                                                <span className="text-gray-400">Fone Fixo:</span>
+                                                <span className="font-semibold text-gray-800 dark:text-gray-200">{m.homePhone}</span>
+                                              </div>
+                                            )}
+                                          </div>
+
+                                          {/* Individual columns */}
+                                          <div className="grid grid-cols-2 gap-3 text-[11px]">
+                                            {/* Husband Details */}
+                                            <div className="p-2.5 bg-gray-50/20 dark:bg-zinc-850/10 rounded-xl border border-gray-200/50 dark:border-zinc-800/80 space-y-1.5">
+                                              <p className="font-bold text-gray-800 dark:text-gray-350 truncate">Ele ({m.husbandName?.split(" ")[0]})</p>
+                                              {system !== "EJC" && (
+                                                <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-205">{formatDate(m.husbandBirthDate)}</span></p>
+                                              )}
+                                              <p className="text-gray-500 truncate">Cel: <span className="font-semibold text-gray-800 dark:text-gray-205">{m.husbandPhone}</span></p>
+                                            </div>
+
+                                            {/* Wife Details */}
+                                            <div className="p-2.5 bg-gray-50/20 dark:bg-zinc-850/10 rounded-xl border border-gray-200/50 dark:border-zinc-800/80 space-y-1.5">
+                                              <p className="font-bold text-gray-800 dark:text-gray-350 truncate">Ela ({m.wifeName?.split(" ")[0]})</p>
+                                              {system !== "EJC" && (
+                                                <p className="text-gray-500">Nasc: <span className="font-semibold text-gray-800 dark:text-gray-205">{formatDate(m.wifeBirthDate)}</span></p>
+                                              )}
+                                              <p className="text-gray-500 truncate">Cel: <span className="font-semibold text-gray-800 dark:text-gray-205">{m.wifePhone}</span></p>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
+                                );
+                              })}
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))
+                      }
                     </div>
                   ) : (
                     /* VIEW: LGPD (Reduced Tabular Grid) */

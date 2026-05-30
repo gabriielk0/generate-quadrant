@@ -105,6 +105,16 @@ function createCell(label: string, value: string | null | undefined, colSpan: nu
 
 export async function generateWordQuadrant(teams: Team[]) {
   const subcategoriesOrder = [
+    "Montagem",
+    "Finanças",
+    "Palestra",
+    "Fichas",
+    "Pós-Encontro",
+    "Círculo Amarelo",
+    "Círculo Azul",
+    "Círculo Rosa",
+    "Círculo Verde",
+    "Círculo Vermelho",
     "Casal coordenador",
     "Casal apoio",
     "Casais membros",
@@ -297,7 +307,7 @@ export async function generateWordQuadrant(teams: Team[]) {
   // Generate buffer and download file
   const blob = await Packer.toBlob(doc);
   const filename = teams.length === 1
-    ? `quadrante_${teams[0].name.toLowerCase().replace(/\s+/g, "_")}.docx`
+    ? `Quadrante_${teams[0].name.replace(/\s+/g, "_")}.docx`
     : "quadrante_completo.docx";
 
   saveAs(blob, filename);

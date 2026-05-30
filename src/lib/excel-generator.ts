@@ -45,7 +45,7 @@ function setCellRichText(cell: ExcelJS.Cell, label: string, value: string) {
   cell.value = {
     richText: [
       { text: label, font: { bold: true, name: "Segoe UI", size: 9, color: { argb: "FF000000" } } },
-      { text: value || "-", font: { name: "Segoe UI", size: 9, color: { argb: "FF1F2937" } } } // Gray 800
+      { text: value || "-", font: { name: "Segoe UI", size: 9, color: { argb: "FF000000" } } } // Black
     ]
   };
   cell.alignment = { vertical: "middle", horizontal: "left", wrapText: true };
@@ -53,8 +53,18 @@ function setCellRichText(cell: ExcelJS.Cell, label: string, value: string) {
 
 export async function generateExcelQuadrant(teams: Team[]) {
   const workbook = new ExcelJS.Workbook();
-  
+
   const subcategoriesOrder = [
+    "Montagem",
+    "Finanças",
+    "Palestra",
+    "Fichas",
+    "Pós-Encontro",
+    "Círculo Amarelo",
+    "Círculo Azul",
+    "Círculo Rosa",
+    "Círculo Verde",
+    "Círculo Vermelho",
     "Casal coordenador",
     "Casal apoio",
     "Casais membros",
@@ -207,16 +217,16 @@ export async function generateExcelQuadrant(teams: Team[]) {
           // Set values
           setCellRichText(worksheet.getCell(startRow, 2), "Ele: ", m.husbandName || "");
           setCellRichText(worksheet.getCell(startRow, 8), "Nasc: ", formatDate(m.husbandBirthDate));
-          
+
           setCellRichText(worksheet.getCell(startRow + 1, 2), "E-mail: ", m.husbandEmail || "-");
           setCellRichText(worksheet.getCell(startRow + 1, 8), "Cel: ", m.husbandPhone || "");
-          
+
           setCellRichText(worksheet.getCell(startRow + 2, 2), "Ela: ", m.wifeName || "");
           setCellRichText(worksheet.getCell(startRow + 2, 8), "Nasc: ", formatDate(m.wifeBirthDate));
-          
+
           setCellRichText(worksheet.getCell(startRow + 3, 2), "E-mail: ", m.wifeEmail || "-");
           setCellRichText(worksheet.getCell(startRow + 3, 8), "Cel: ", m.wifePhone || "");
-          
+
           setCellRichText(worksheet.getCell(startRow + 4, 2), "End: ", m.address || "");
           setCellRichText(worksheet.getCell(startRow + 4, 8), "Tel. Resid: ", m.homePhone || "-");
 
@@ -259,5 +269,8 @@ export async function generateExcelQuadrant(teams: Team[]) {
   const blob = new Blob([buffer], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
-  saveAs(blob, "quadrante_segue_me.xlsx");
+  const filename = teams.length === 1
+    ? `Quadrante_${teams[0].name.replace(/\s+/g, "_")}.xlsx`
+    : "quadrante_segue_me.xlsx";
+  saveAs(blob, filename);
 }

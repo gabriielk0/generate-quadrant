@@ -13,6 +13,12 @@ const JovemSchema = z.object({
   address: z.string().min(5, "Endereço deve ter pelo menos 5 caracteres"),
 });
 
+const JovemEJCSchema = z.object({
+  name: z.string().min(3, "Nome completo deve ter pelo menos 3 caracteres"),
+  phone: z.string().min(1, "Telefone é obrigatório"),
+  address: z.string().min(5, "Endereço deve ter pelo menos 5 caracteres"),
+});
+
 const CasalSchema = z.object({
   address: z.string().min(5, "Endereço deve ter pelo menos 5 caracteres"),
   homePhone: z.string().optional().or(z.literal("")),
@@ -27,6 +33,14 @@ const CasalSchema = z.object({
   wifeNickname: z.string().optional().or(z.literal("")),
   wifeEmail: z.string().email("E-mail da esposa inválido").or(z.literal("")),
   wifeBirthDate: z.string().min(1, "Data de nascimento da esposa é obrigatória"),
+  wifePhone: z.string().min(1, "Celular da esposa é obrigatório"),
+});
+
+const CasalEJCSchema = z.object({
+  address: z.string().min(5, "Endereço deve ter pelo menos 5 caracteres"),
+  husbandName: z.string().min(3, "Nome do esposo deve ter pelo menos 3 caracteres"),
+  husbandPhone: z.string().min(1, "Celular do esposo é obrigatório"),
+  wifeName: z.string().min(3, "Nome da esposa deve ter pelo menos 3 caracteres"),
   wifePhone: z.string().min(1, "Celular da esposa é obrigatório"),
 });
 
@@ -52,82 +66,152 @@ export async function createMember(
       return { error: "A equipe selecionada não existe." };
     }
 
+    const isEJC = teamExists.system === "EJC";
+
     // 2. Validate and Save depending on type
     if (type === "JOVEM") {
-      const parsed = JovemSchema.safeParse(rawData);
-      if (!parsed.success) {
-        return {
-          error: "Dados inválidos. Por favor, verifique os campos destacados.",
-          fieldErrors: parsed.error.flatten().fieldErrors,
-        };
+      if (isEJC) {
+        const parsed = JovemEJCSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const { name, phone, address } = parsed.data;
+
+        const member = await db.member.create({
+          data: {
+            type,
+            subcategory,
+            teamId,
+            name,
+            nickname: null,
+            birthDate: null,
+            phone,
+            email: null,
+            address,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
+      } else {
+        const parsed = JovemSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const { name, nickname, birthDate, phone, email, address } = parsed.data;
+
+        const member = await db.member.create({
+          data: {
+            type,
+            subcategory,
+            teamId,
+            name,
+            nickname,
+            birthDate: birthDate ? new Date(birthDate + "T00:00:00") : null,
+            phone,
+            email: email || null,
+            address,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
       }
-
-      const { name, nickname, birthDate, phone, email, address } = parsed.data;
-
-      const member = await db.member.create({
-        data: {
-          type,
-          subcategory,
-          teamId,
-          name,
-          nickname,
-          birthDate: birthDate ? new Date(birthDate + "T00:00:00") : null,
-          phone,
-          email: email || null,
-          address,
-        },
-      });
-
-      revalidatePath("/");
-      revalidatePath("/ejc");
-      return { success: true, member };
     } else if (type === "CASAL") {
-      const parsed = CasalSchema.safeParse(rawData);
-      if (!parsed.success) {
-        return {
-          error: "Dados inválidos. Por favor, verifique os campos destacados.",
-          fieldErrors: parsed.error.flatten().fieldErrors,
-        };
-      }
-
-      const {
-        address,
-        homePhone,
-        husbandName,
-        husbandNickname,
-        husbandEmail,
-        husbandBirthDate,
-        husbandPhone,
-        wifeName,
-        wifeNickname,
-        wifeEmail,
-        wifeBirthDate,
-        wifePhone,
-      } = parsed.data;
-
-      const member = await db.member.create({
-        data: {
-          type,
-          subcategory,
-          teamId,
+      if (isEJC) {
+        const parsed = CasalEJCSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const {
           address,
-          homePhone: homePhone || null,
           husbandName,
-          husbandNickname: husbandNickname || null,
-          husbandEmail: husbandEmail || null,
-          husbandBirthDate: husbandBirthDate ? new Date(husbandBirthDate + "T00:00:00") : null,
           husbandPhone,
           wifeName,
-          wifeNickname: wifeNickname || null,
-          wifeEmail: wifeEmail || null,
-          wifeBirthDate: wifeBirthDate ? new Date(wifeBirthDate + "T00:00:00") : null,
           wifePhone,
-        },
-      });
+        } = parsed.data;
 
-      revalidatePath("/");
-      revalidatePath("/ejc");
-      return { success: true, member };
+        const member = await db.member.create({
+          data: {
+            type,
+            subcategory,
+            teamId,
+            address,
+            homePhone: null,
+            husbandName,
+            husbandNickname: null,
+            husbandEmail: null,
+            husbandBirthDate: null,
+            husbandPhone,
+            wifeName,
+            wifeNickname: null,
+            wifeEmail: null,
+            wifeBirthDate: null,
+            wifePhone,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
+      } else {
+        const parsed = CasalSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const {
+          address,
+          homePhone,
+          husbandName,
+          husbandNickname,
+          husbandEmail,
+          husbandBirthDate,
+          husbandPhone,
+          wifeName,
+          wifeNickname,
+          wifeEmail,
+          wifeBirthDate,
+          wifePhone,
+        } = parsed.data;
+
+        const member = await db.member.create({
+          data: {
+            type,
+            subcategory,
+            teamId,
+            address,
+            homePhone: homePhone || null,
+            husbandName,
+            husbandNickname: husbandNickname || null,
+            husbandEmail: husbandEmail || null,
+            husbandBirthDate: husbandBirthDate ? new Date(husbandBirthDate + "T00:00:00") : null,
+            husbandPhone,
+            wifeName,
+            wifeNickname: wifeNickname || null,
+            wifeEmail: wifeEmail || null,
+            wifeBirthDate: wifeBirthDate ? new Date(wifeBirthDate + "T00:00:00") : null,
+            wifePhone,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
+      }
     } else {
       return { error: "Tipo de integrante inválido." };
     }
@@ -151,99 +235,188 @@ export async function updateMember(
   }
 
   try {
+    const memberExists = await db.member.findUnique({
+      where: { id },
+      include: { team: true },
+    });
+    if (!memberExists) {
+      return { error: "O integrante selecionado não existe." };
+    }
+    const isEJC = memberExists.team.system === "EJC";
+
     if (type === "JOVEM") {
-      const parsed = JovemSchema.safeParse(rawData);
-      if (!parsed.success) {
-        return {
-          error: "Dados inválidos. Por favor, verifique os campos destacados.",
-          fieldErrors: parsed.error.flatten().fieldErrors,
-        };
+      if (isEJC) {
+        const parsed = JovemEJCSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const { name, phone, address } = parsed.data;
+
+        const member = await db.member.update({
+          where: { id },
+          data: {
+            type,
+            subcategory,
+            name,
+            nickname: null,
+            birthDate: null,
+            phone,
+            email: null,
+            address,
+            // Reset Casal fields if type is changed to JOVEM
+            homePhone: null,
+            husbandName: null,
+            husbandNickname: null,
+            husbandEmail: null,
+            husbandBirthDate: null,
+            husbandPhone: null,
+            wifeName: null,
+            wifeNickname: null,
+            wifeEmail: null,
+            wifeBirthDate: null,
+            wifePhone: null,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
+      } else {
+        const parsed = JovemSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const { name, nickname, birthDate, phone, email, address } = parsed.data;
+
+        const member = await db.member.update({
+          where: { id },
+          data: {
+            type,
+            subcategory,
+            name,
+            nickname,
+            birthDate: birthDate ? new Date(birthDate + "T00:00:00") : null,
+            phone,
+            email: email || null,
+            address,
+            // Reset Casal fields if type is changed to JOVEM
+            homePhone: null,
+            husbandName: null,
+            husbandNickname: null,
+            husbandEmail: null,
+            husbandBirthDate: null,
+            husbandPhone: null,
+            wifeName: null,
+            wifeNickname: null,
+            wifeEmail: null,
+            wifeBirthDate: null,
+            wifePhone: null,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
       }
-
-      const { name, nickname, birthDate, phone, email, address } = parsed.data;
-
-      const member = await db.member.update({
-        where: { id },
-        data: {
-          type,
-          subcategory,
-          name,
-          nickname,
-          birthDate: birthDate ? new Date(birthDate + "T00:00:00") : null,
-          phone,
-          email: email || null,
-          address,
-          // Reset Casal fields if type is changed to JOVEM
-          homePhone: null,
-          husbandName: null,
-          husbandNickname: null,
-          husbandEmail: null,
-          husbandBirthDate: null,
-          husbandPhone: null,
-          wifeName: null,
-          wifeNickname: null,
-          wifeEmail: null,
-          wifeBirthDate: null,
-          wifePhone: null,
-        },
-      });
-
-      revalidatePath("/");
-      revalidatePath("/ejc");
-      return { success: true, member };
     } else if (type === "CASAL") {
-      const parsed = CasalSchema.safeParse(rawData);
-      if (!parsed.success) {
-        return {
-          error: "Dados inválidos. Por favor, verifique os campos destacados.",
-          fieldErrors: parsed.error.flatten().fieldErrors,
-        };
-      }
+      if (isEJC) {
+        const parsed = CasalEJCSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const { address, husbandName, husbandPhone, wifeName, wifePhone } = parsed.data;
 
-      const {
-        address,
-        homePhone,
-        husbandName,
-        husbandNickname,
-        husbandEmail,
-        husbandBirthDate,
-        husbandPhone,
-        wifeName,
-        wifeNickname,
-        wifeEmail,
-        wifeBirthDate,
-        wifePhone,
-      } = parsed.data;
+        const member = await db.member.update({
+          where: { id },
+          data: {
+            type,
+            subcategory,
+            address,
+            homePhone: null,
+            husbandName,
+            husbandNickname: null,
+            husbandEmail: null,
+            husbandBirthDate: null,
+            husbandPhone,
+            wifeName,
+            wifeNickname: null,
+            wifeEmail: null,
+            wifeBirthDate: null,
+            wifePhone,
+            // Reset Jovem fields if type is changed to CASAL
+            name: null,
+            nickname: null,
+            birthDate: null,
+            phone: null,
+            email: null,
+          },
+        });
 
-      const member = await db.member.update({
-        where: { id },
-        data: {
-          type,
-          subcategory,
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
+      } else {
+        const parsed = CasalSchema.safeParse(rawData);
+        if (!parsed.success) {
+          return {
+            error: "Dados inválidos. Por favor, verifique os campos destacados.",
+            fieldErrors: parsed.error.flatten().fieldErrors,
+          };
+        }
+        const {
           address,
-          homePhone: homePhone || null,
+          homePhone,
           husbandName,
-          husbandNickname: husbandNickname || null,
-          husbandEmail: husbandEmail || null,
-          husbandBirthDate: husbandBirthDate ? new Date(husbandBirthDate + "T00:00:00") : null,
+          husbandNickname,
+          husbandEmail,
+          husbandBirthDate,
           husbandPhone,
           wifeName,
-          wifeNickname: wifeNickname || null,
-          wifeEmail: wifeEmail || null,
-          wifeBirthDate: wifeBirthDate ? new Date(wifeBirthDate + "T00:00:00") : null,
+          wifeNickname,
+          wifeEmail,
+          wifeBirthDate,
           wifePhone,
-          // Reset Jovem fields if type is changed to CASAL
-          name: null,
-          nickname: null,
-          birthDate: null,
-          phone: null,
-          email: null,
-        },
-      });
+        } = parsed.data;
 
-      revalidatePath("/");
-      revalidatePath("/ejc");
-      return { success: true, member };
+        const member = await db.member.update({
+          where: { id },
+          data: {
+            type,
+            subcategory,
+            address,
+            homePhone: homePhone || null,
+            husbandName,
+            husbandNickname: husbandNickname || null,
+            husbandEmail: husbandEmail || null,
+            husbandBirthDate: husbandBirthDate ? new Date(husbandBirthDate + "T00:00:00") : null,
+            husbandPhone,
+            wifeName,
+            wifeNickname: wifeNickname || null,
+            wifeEmail: wifeEmail || null,
+            wifeBirthDate: wifeBirthDate ? new Date(wifeBirthDate + "T00:00:00") : null,
+            wifePhone,
+            // Reset Jovem fields if type is changed to CASAL
+            name: null,
+            nickname: null,
+            birthDate: null,
+            phone: null,
+            email: null,
+          },
+        });
+
+        revalidatePath("/");
+        revalidatePath("/ejc");
+        return { success: true, member };
+      }
     } else {
       return { error: "Tipo de integrante inválido." };
     }

@@ -379,15 +379,13 @@ export function MemberForm({
           <div className="p-4 bg-gray-100 dark:bg-zinc-800/40 border border-gray-300 dark:border-zinc-700/60 rounded-xl text-xs text-gray-800 dark:text-gray-300 font-medium">
             {error}
           </div>
-        )}
-
-        {/* DYNAMIC FORM FIELDS */}
+        )}        {/* DYNAMIC FORM FIELDS */}
         <div className="transition-all duration-300">
           {type === "JOVEM" ? (
             /* JOVEM FORM FIELDS */
             <div className="space-y-4 animate-in fade-in slide-in-from-top-4 duration-200">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className={`space-y-1 ${system === "EJC" ? "md:col-span-2" : ""}`}>
                   <label htmlFor="name" className="text-xs font-medium text-gray-700 dark:text-gray-300">Nome Completo</label>
                   <input
                     id="name"
@@ -403,40 +401,44 @@ export function MemberForm({
                   )}
                 </div>
 
-                <div className="space-y-1">
-                  <label htmlFor="nickname" className="text-xs font-medium text-gray-700 dark:text-gray-300">Apelido</label>
-                  <input
-                    id="nickname"
-                    type="text"
-                    name="nickname"
-                    value={jovemData.nickname}
-                    onChange={handleJovemChange}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                    placeholder="Como prefere ser chamado"
-                  />
-                  {fieldErrors.nickname && (
-                    <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.nickname[0]}</p>
-                  )}
-                </div>
+                {system !== "EJC" && (
+                  <div className="space-y-1">
+                    <label htmlFor="nickname" className="text-xs font-medium text-gray-700 dark:text-gray-300">Apelido</label>
+                    <input
+                      id="nickname"
+                      type="text"
+                      name="nickname"
+                      value={jovemData.nickname}
+                      onChange={handleJovemChange}
+                      className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                      placeholder="Como prefere ser chamado"
+                    />
+                    {fieldErrors.nickname && (
+                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.nickname[0]}</p>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label htmlFor="birthDate" className="text-xs font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</label>
-                  <input
-                    id="birthDate"
-                    type="date"
-                    name="birthDate"
-                    value={jovemData.birthDate}
-                    onChange={handleJovemChange}
-                    className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                  />
-                  {fieldErrors.birthDate && (
-                    <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.birthDate[0]}</p>
-                  )}
-                </div>
+                {system !== "EJC" && (
+                  <div className="space-y-1">
+                    <label htmlFor="birthDate" className="text-xs font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</label>
+                    <input
+                      id="birthDate"
+                      type="date"
+                      name="birthDate"
+                      value={jovemData.birthDate}
+                      onChange={handleJovemChange}
+                      className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                    />
+                    {fieldErrors.birthDate && (
+                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.birthDate[0]}</p>
+                    )}
+                  </div>
+                )}
 
-                <div className="space-y-1">
+                <div className={`space-y-1 ${system === "EJC" ? "md:col-span-2" : ""}`}>
                   <label htmlFor="phone" className="text-xs font-medium text-gray-700 dark:text-gray-300">Telefone / Celular</label>
                   <input
                     id="phone"
@@ -453,21 +455,23 @@ export function MemberForm({
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label htmlFor="email" className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
-                <input
-                  id="email"
-                  type="email"
-                  name="email"
-                  value={jovemData.email}
-                  onChange={handleJovemChange}
-                  placeholder="jovem@email.com"
-                  className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                />
-                {fieldErrors.email && (
-                  <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.email[0]}</p>
-                )}
-              </div>
+              {system !== "EJC" && (
+                <div className="space-y-1">
+                  <label htmlFor="email" className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
+                  <input
+                    id="email"
+                    type="email"
+                    name="email"
+                    value={jovemData.email}
+                    onChange={handleJovemChange}
+                    placeholder="jovem@email.com"
+                    className="w-full px-4 py-2 bg-gray-50 dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                  />
+                  {fieldErrors.email && (
+                    <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.email[0]}</p>
+                  )}
+                </div>
+              )}
 
               <div className="space-y-1">
                 <label htmlFor="address" className="text-xs font-medium text-gray-700 dark:text-gray-300">Endereço Completo</label>
@@ -498,7 +502,7 @@ export function MemberForm({
                 </h4>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1">
+                  <div className={`space-y-1 ${system === "EJC" ? "md:col-span-2" : ""}`}>
                     <label htmlFor="casal-address" className="text-xs font-medium text-gray-700 dark:text-gray-300">Endereço Completo</label>
                     <input
                       id="casal-address"
@@ -514,21 +518,23 @@ export function MemberForm({
                     )}
                   </div>
 
-                  <div className="space-y-1">
-                    <label htmlFor="homePhone" className="text-xs font-medium text-gray-700 dark:text-gray-300">Telefone Residencial</label>
-                    <input
-                      id="homePhone"
-                      type="text"
-                      name="homePhone"
-                      value={casalData.homePhone}
-                      onChange={handleCasalChange}
-                      placeholder="(00) 0000-0000"
-                      className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                    />
-                    {fieldErrors.homePhone && (
-                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.homePhone[0]}</p>
-                    )}
-                  </div>
+                  {system !== "EJC" && (
+                    <div className="space-y-1">
+                      <label htmlFor="homePhone" className="text-xs font-medium text-gray-700 dark:text-gray-300">Telefone Residencial</label>
+                      <input
+                        id="homePhone"
+                        type="text"
+                        name="homePhone"
+                        value={casalData.homePhone}
+                        onChange={handleCasalChange}
+                        placeholder="(00) 0000-0000"
+                        className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                      />
+                      {fieldErrors.homePhone && (
+                        <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.homePhone[0]}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -559,38 +565,40 @@ export function MemberForm({
                     )}
                   </div>
 
-                  {system === "EJC" && (
-                    <div className="space-y-1">
-                      <label htmlFor="husbandNickname" className="text-xs font-medium text-gray-700 dark:text-gray-300">Apelido</label>
-                      <input
-                        id="husbandNickname"
-                        type="text"
-                        name="husbandNickname"
-                        value={casalData.husbandNickname}
-                        onChange={handleCasalChange}
-                        placeholder="Como prefere ser chamado"
-                        className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                      />
-                      {fieldErrors.husbandNickname && (
-                        <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.husbandNickname[0]}</p>
-                      )}
-                    </div>
-                  )}
+                  {system !== "EJC" && (
+                    <>
+                      <div className="space-y-1">
+                        <label htmlFor="husbandNickname" className="text-xs font-medium text-gray-700 dark:text-gray-300">Apelido</label>
+                        <input
+                          id="husbandNickname"
+                          type="text"
+                          name="husbandNickname"
+                          value={casalData.husbandNickname}
+                          onChange={handleCasalChange}
+                          placeholder="Como prefere ser chamado"
+                          className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-950 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                        />
+                        {fieldErrors.husbandNickname && (
+                          <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.husbandNickname[0]}</p>
+                        )}
+                      </div>
 
-                  <div className="space-y-1">
-                    <label htmlFor="husbandBirthDate" className="text-xs font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</label>
-                    <input
-                      id="husbandBirthDate"
-                      type="date"
-                      name="husbandBirthDate"
-                      value={casalData.husbandBirthDate}
-                      onChange={handleCasalChange}
-                      className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                    />
-                    {fieldErrors.husbandBirthDate && (
-                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.husbandBirthDate[0]}</p>
-                    )}
-                  </div>
+                      <div className="space-y-1">
+                        <label htmlFor="husbandBirthDate" className="text-xs font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</label>
+                        <input
+                          id="husbandBirthDate"
+                          type="date"
+                          name="husbandBirthDate"
+                          value={casalData.husbandBirthDate}
+                          onChange={handleCasalChange}
+                          className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                        />
+                        {fieldErrors.husbandBirthDate && (
+                          <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.husbandBirthDate[0]}</p>
+                        )}
+                      </div>
+                    </>
+                  )}
 
                   <div className="space-y-1">
                     <label htmlFor="husbandPhone" className="text-xs font-medium text-gray-700 dark:text-gray-300">Celular</label>
@@ -608,21 +616,23 @@ export function MemberForm({
                     )}
                   </div>
 
-                  <div className="space-y-1">
-                    <label htmlFor="husbandEmail" className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
-                    <input
-                      id="husbandEmail"
-                      type="email"
-                      name="husbandEmail"
-                      value={casalData.husbandEmail}
-                      onChange={handleCasalChange}
-                      placeholder="esposo@email.com"
-                      className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                    />
-                    {fieldErrors.husbandEmail && (
-                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.husbandEmail[0]}</p>
-                    )}
-                  </div>
+                  {system !== "EJC" && (
+                    <div className="space-y-1">
+                      <label htmlFor="husbandEmail" className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
+                      <input
+                        id="husbandEmail"
+                        type="email"
+                        name="husbandEmail"
+                        value={casalData.husbandEmail}
+                        onChange={handleCasalChange}
+                        placeholder="esposo@email.com"
+                        className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                      />
+                      {fieldErrors.husbandEmail && (
+                        <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.husbandEmail[0]}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
 
                 {/* ELA (Esposa) */}
@@ -650,38 +660,40 @@ export function MemberForm({
                     )}
                   </div>
 
-                  {system === "EJC" && (
-                    <div className="space-y-1">
-                      <label htmlFor="wifeNickname" className="text-xs font-medium text-gray-700 dark:text-gray-300">Apelido</label>
-                      <input
-                        id="wifeNickname"
-                        type="text"
-                        name="wifeNickname"
-                        value={casalData.wifeNickname}
-                        onChange={handleCasalChange}
-                        placeholder="Como prefere ser chamada"
-                        className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                      />
-                      {fieldErrors.wifeNickname && (
-                        <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.wifeNickname[0]}</p>
-                      )}
-                    </div>
-                  )}
+                  {system !== "EJC" && (
+                    <>
+                      <div className="space-y-1">
+                        <label htmlFor="wifeNickname" className="text-xs font-medium text-gray-700 dark:text-gray-300">Apelido</label>
+                        <input
+                          id="wifeNickname"
+                          type="text"
+                          name="wifeNickname"
+                          value={casalData.wifeNickname}
+                          onChange={handleCasalChange}
+                          placeholder="Como prefere ser chamada"
+                          className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                        />
+                        {fieldErrors.wifeNickname && (
+                          <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.wifeNickname[0]}</p>
+                        )}
+                      </div>
 
-                  <div className="space-y-1">
-                    <label htmlFor="wifeBirthDate" className="text-xs font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</label>
-                    <input
-                      id="wifeBirthDate"
-                      type="date"
-                      name="wifeBirthDate"
-                      value={casalData.wifeBirthDate}
-                      onChange={handleCasalChange}
-                      className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                    />
-                    {fieldErrors.wifeBirthDate && (
-                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.wifeBirthDate[0]}</p>
-                    )}
-                  </div>
+                      <div className="space-y-1">
+                        <label htmlFor="wifeBirthDate" className="text-xs font-medium text-gray-700 dark:text-gray-300">Data de Nascimento</label>
+                        <input
+                          id="wifeBirthDate"
+                          type="date"
+                          name="wifeBirthDate"
+                          value={casalData.wifeBirthDate}
+                          onChange={handleCasalChange}
+                          className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                        />
+                        {fieldErrors.wifeBirthDate && (
+                          <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.wifeBirthDate[0]}</p>
+                        )}
+                      </div>
+                    </>
+                  )}
 
                   <div className="space-y-1">
                     <label htmlFor="wifePhone" className="text-xs font-medium text-gray-700 dark:text-gray-300">Celular</label>
@@ -699,21 +711,23 @@ export function MemberForm({
                     )}
                   </div>
 
-                  <div className="space-y-1">
-                    <label htmlFor="wifeEmail" className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
-                    <input
-                      id="wifeEmail"
-                      type="email"
-                      name="wifeEmail"
-                      value={casalData.wifeEmail}
-                      onChange={handleCasalChange}
-                      placeholder="esposa@email.com"
-                      className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
-                    />
-                    {fieldErrors.wifeEmail && (
-                      <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.wifeEmail[0]}</p>
-                    )}
-                  </div>
+                  {system !== "EJC" && (
+                    <div className="space-y-1">
+                      <label htmlFor="wifeEmail" className="text-xs font-medium text-gray-700 dark:text-gray-300">E-mail</label>
+                      <input
+                        id="wifeEmail"
+                        type="email"
+                        name="wifeEmail"
+                        value={casalData.wifeEmail}
+                        onChange={handleCasalChange}
+                        placeholder="esposa@email.com"
+                        className="w-full px-4 py-2 bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-850 rounded-xl text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-400 text-xs"
+                      />
+                      {fieldErrors.wifeEmail && (
+                        <p className="text-[10px] text-red-500 dark:text-red-400 mt-1 font-semibold">{fieldErrors.wifeEmail[0]}</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

@@ -64,7 +64,7 @@ function formatNameWithNickname(name: string | null | undefined, nickname: strin
 const borderStyle = {
   style: BorderStyle.SINGLE,
   size: 8, // 1 pt border
-  color: "1E3A8A", // EJC Blue
+  color: "000000", // Black border
 };
 
 const cellBorders = {
@@ -86,7 +86,7 @@ function createCell(label: string, value: string | null | undefined, colSpan: nu
             bold: true,
             size: 16, // 8 pt
             font: "Arial",
-            color: "1E3A8A", // Blue labels
+            color: "000000", // Black labels
           }),
           new TextRun({
             text: value || "-",
@@ -115,6 +115,16 @@ function createCell(label: string, value: string | null | undefined, colSpan: nu
 
 export async function generateWordQuadrantEJC(teams: Team[]) {
   const subcategoriesOrder = [
+    "Montagem",
+    "Finanças",
+    "Palestra",
+    "Fichas",
+    "Pós-Encontro",
+    "Círculo Amarelo",
+    "Círculo Azul",
+    "Círculo Rosa",
+    "Círculo Verde",
+    "Círculo Vermelho",
     "Jovens coordenadores",
     "Coordenador(a)",
     "Casal coordenador",
@@ -139,7 +149,7 @@ export async function generateWordQuadrantEJC(teams: Team[]) {
             bold: true,
             size: 24, // 12 pt
             font: "Arial",
-            color: "1E3A8A", // Blue
+            color: "000000", // Black
           }),
         ],
         spacing: { before: 240, after: 120 },
@@ -178,7 +188,7 @@ export async function generateWordQuadrantEJC(teams: Team[]) {
               bold: true,
               size: 18, // 9 pt
               font: "Arial",
-              color: "1E3A8A", // Blue
+              color: "000000", // Black
             }),
           ],
           spacing: { before: 180, after: 100 },
@@ -201,18 +211,16 @@ export async function generateWordQuadrantEJC(teams: Team[]) {
               new TableRow({
                 cantSplit: true,
                 children: [
-                  // Row 1: Nome (span 12) | Celular (span 4) | Nascimento (span 4)
-                  createCell("Nome (Apelido): ", formatNameWithNickname(m.name, m.nickname), 12),
-                  createCell("Celular: ", m.phone, 4),
-                  createCell("Nascimento: ", formatDate(m.birthDate), 4),
+                  // Row 1: Nome (span 15) | Tel. (span 5)
+                  createCell("Nome: ", m.name, 15),
+                  createCell("Tel.: ", m.phone, 5),
                 ],
               }),
               new TableRow({
                 cantSplit: true,
                 children: [
-                  // Row 2: E-mail (span 10) | Endereço (span 10)
-                  createCell("E-mail: ", m.email || "-", 10),
-                  createCell("Endereço: ", m.address, 10),
+                  // Row 2: Endereço (span 20)
+                  createCell("End.: ", m.address, 20),
                 ],
               }),
             ],
@@ -220,7 +228,7 @@ export async function generateWordQuadrantEJC(teams: Team[]) {
 
           docChildren.push(table);
         } else {
-          // Casal Table: 4 rows, 20 columns layout
+          // Casal Table: 3 rows, 20 columns layout
           const table = new Table({
             width: {
               size: 9000,
@@ -228,37 +236,27 @@ export async function generateWordQuadrantEJC(teams: Team[]) {
             },
             columnWidths: Array(20).fill(450),
             rows: [
-              // Row 1: Ele / Celular ELE / Nasc ELE
+              // Row 1: Ele / Celular ELE
               new TableRow({
                 cantSplit: true,
                 children: [
-                  createCell("Nome (Apelido) ELE: ", formatNameWithNickname(m.husbandName, m.husbandNickname), 12),
-                  createCell("Celular ELE: ", m.husbandPhone, 4),
-                  createCell("Nasc. ELE: ", formatDate(m.husbandBirthDate), 4),
+                  createCell("Nome ELE: ", m.husbandName, 15),
+                  createCell("Tel.: ", m.husbandPhone, 5),
                 ],
               }),
-              // Row 2: Ela / Celular ELA / Nasc ELA
+              // Row 2: Ela / Celular ELA
               new TableRow({
                 cantSplit: true,
                 children: [
-                  createCell("Nome (Apelido) ELA: ", formatNameWithNickname(m.wifeName, m.wifeNickname), 12),
-                  createCell("Celular ELA: ", m.wifePhone, 4),
-                  createCell("Nasc. ELA: ", formatDate(m.wifeBirthDate), 4),
+                  createCell("Nome ELA: ", m.wifeName, 15),
+                  createCell("Tel.: ", m.wifePhone, 5),
                 ],
               }),
-              // Row 3: E-mail Ele / E-mail Ela
+              // Row 3: Endereço (span 20)
               new TableRow({
                 cantSplit: true,
                 children: [
-                  createCell("E-mail ELE: ", m.husbandEmail || "-", 10),
-                  createCell("E-mail ELA: ", m.wifeEmail || "-", 10),
-                ],
-              }),
-              // Row 4: Endereço (span 20)
-              new TableRow({
-                cantSplit: true,
-                children: [
-                  createCell("Endereço: ", m.address, 20),
+                  createCell("End.: ", m.address, 20),
                 ],
               }),
             ],
@@ -300,7 +298,7 @@ export async function generateWordQuadrantEJC(teams: Team[]) {
   // Generate buffer and download file
   const blob = await Packer.toBlob(doc);
   const filename = teams.length === 1
-    ? `quadrante_ejc_${teams[0].name.toLowerCase().replace(/\s+/g, "_")}.docx`
+    ? `Quadrante_${teams[0].name.replace(/\s+/g, "_")}.docx`
     : "quadrante_ejc.docx";
 
   saveAs(blob, filename);

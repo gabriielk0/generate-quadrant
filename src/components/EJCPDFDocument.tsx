@@ -76,15 +76,30 @@ const styles = StyleSheet.create({
     marginTop: 16,
     marginBottom: 10,
     borderBottomWidth: 2,
-    borderBottomColor: "#EAB308", // Yellow border
+    borderBottomColor: "#86EFAC", // Light Green border
     paddingBottom: 4,
   },
   teamTitle: {
     fontSize: 13,
     fontFamily: "Helvetica-Bold",
-    color: "#1E3A8A", // Dark Blue
+    color: "#000000", // Black
     textTransform: "uppercase",
     textAlign: "center",
+  },
+  photoPlaceholder: {
+    borderWidth: 1,
+    borderColor: "#000000",
+    borderStyle: "dashed",
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+    borderRadius: 4,
+  },
+  photoText: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: "#000000",
   },
   subcategoryContainer: {
     marginBottom: 12,
@@ -92,16 +107,16 @@ const styles = StyleSheet.create({
   subcategoryTitle: {
     fontSize: 9.5,
     fontFamily: "Helvetica-Bold",
-    color: "#1E3A8A", // Dark Blue
+    color: "#000000", // Black
     marginTop: 10,
     marginBottom: 6,
     textTransform: "uppercase",
     textAlign: "left",
   },
-  // Box with thin dark blue borders
+  // Box with thin black borders
   memberBox: {
     borderWidth: 0.8,
-    borderColor: "#1E3A8A",
+    borderColor: "#000000", // Black
     borderStyle: "solid",
     marginBottom: 6,
     backgroundColor: "#ffffff",
@@ -112,51 +127,26 @@ const styles = StyleSheet.create({
   },
   gridRowBorderBottom: {
     borderBottomWidth: 0.8,
-    borderBottomColor: "#1E3A8A",
+    borderBottomColor: "#000000", // Black
   },
   stackedItemSeparator: {
     borderTopWidth: 0.8,
-    borderTopColor: "#1E3A8A",
+    borderTopColor: "#000000", // Black
   },
-  // Individual Layout cells (3 parts: 60%, 20%, 20%)
-  cellNome3part: {
-    width: "60%",
+  cellNome75: {
+    width: "75%",
     paddingHorizontal: 6,
     paddingVertical: 3.5,
     borderRightWidth: 0.8,
-    borderRightColor: "#1E3A8A",
+    borderRightColor: "#000000",
     justifyContent: "center",
   },
-  cellTel3part: {
-    width: "20%",
-    paddingHorizontal: 6,
-    paddingVertical: 3.5,
-    borderRightWidth: 0.8,
-    borderRightColor: "#1E3A8A",
-    justifyContent: "center",
-  },
-  cellAniv3part: {
-    width: "20%",
+  cellTel25: {
+    width: "25%",
     paddingHorizontal: 6,
     paddingVertical: 3.5,
     justifyContent: "center",
   },
-  // Cells for 2 parts (50%, 50%)
-  cell2part: {
-    width: "50%",
-    paddingHorizontal: 6,
-    paddingVertical: 3.5,
-    borderRightWidth: 0.8,
-    borderRightColor: "#1E3A8A",
-    justifyContent: "center",
-  },
-  cell2partLast: {
-    width: "50%",
-    paddingHorizontal: 6,
-    paddingVertical: 3.5,
-    justifyContent: "center",
-  },
-  // Full width cell (100% width)
   cellFullWidth: {
     width: "100%",
     paddingHorizontal: 6,
@@ -166,7 +156,7 @@ const styles = StyleSheet.create({
   // Text Styles
   labelBlue: {
     fontFamily: "Helvetica-Bold",
-    color: "#1E3A8A", // Dark Blue label
+    color: "#000000", // Black label
     fontSize: 7.5,
   },
   valueBlack: {
@@ -188,12 +178,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#F3F4F6", // Light grey bg
     paddingVertical: 5,
     borderBottomWidth: 1,
-    borderBottomColor: "#1E3A8A", // EJC Blue bottom border for header
+    borderBottomColor: "#000000", // Black bottom border for header
   },
   lgpdHeaderCellText: {
     fontSize: 8.5,
     fontFamily: "Helvetica-Bold",
-    color: "#1E3A8A", // Dark Blue
+    color: "#000000", // Black
     textTransform: "uppercase",
     paddingHorizontal: 6,
   },
@@ -220,15 +210,18 @@ const styles = StyleSheet.create({
   },
 });
 
-// Columns width for LGPD
-const LGPD_COL_WIDTHS = {
-  nome: "50%",
-  apelido: "25%",
-  nascimento: "25%",
-};
-
 export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
   const subcategoriesOrder = [
+    "Montagem",
+    "Finanças",
+    "Palestra",
+    "Fichas",
+    "Pós-Encontro",
+    "Círculo Amarelo",
+    "Círculo Azul",
+    "Círculo Rosa",
+    "Círculo Verde",
+    "Círculo Vermelho",
     "Jovens coordenadores",
     "Coordenador(a)",
     "Casal coordenador",
@@ -243,39 +236,27 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
   // Helper to render Jovem/Individual rows
   const renderJovemRows = (m: Member) => (
     <>
-      {/* Row 1: Nome (Apelido): (60%) / Celular: (20%) / Nascimento: (20%) */}
+      {/* Row 1: Nome: (75%) / Tel.: (25%) */}
       <View style={[styles.gridRow, styles.gridRowBorderBottom]}>
-        <View style={styles.cellNome3part}>
+        <View style={styles.cellNome75}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Nome (Apelido): </Text>
-            {formatNameWithNickname(m.name, m.nickname)}
+            <Text style={styles.labelBlue}>Nome: </Text>
+            {m.name || "-"}
           </Text>
         </View>
-        <View style={styles.cellTel3part}>
+        <View style={styles.cellTel25}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Celular: </Text>
+            <Text style={styles.labelBlue}>Tel.: </Text>
             {m.phone || "-"}
-          </Text>
-        </View>
-        <View style={styles.cellAniv3part}>
-          <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Nascimento: </Text>
-            {formatDate(m.birthDate)}
           </Text>
         </View>
       </View>
 
-      {/* Row 2: E-mail: (50%) / Endereço: (50%) */}
+      {/* Row 2: End.: (100%) */}
       <View style={styles.gridRow}>
-        <View style={styles.cell2part}>
+        <View style={styles.cellFullWidth}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>E-mail: </Text>
-            {m.email || "-"}
-          </Text>
-        </View>
-        <View style={styles.cell2partLast}>
-          <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Endereço: </Text>
+            <Text style={styles.labelBlue}>End.: </Text>
             {m.address || "-"}
           </Text>
         </View>
@@ -286,71 +267,43 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
   // Helper to render Casal rows
   const renderCasalRows = (m: Member) => (
     <>
-      {/* Row 1 (Ele): Nome (Apelido) ELE: (60%) / Celular ELE: (20%) / Nasc. ELE: (20%) */}
+      {/* Row 1 (Ele): Nome ELE: (75%) / Tel.: (25%) */}
       <View style={[styles.gridRow, styles.gridRowBorderBottom]}>
-        <View style={styles.cellNome3part}>
+        <View style={styles.cellNome75}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Nome (Apelido) ELE: </Text>
-            {formatNameWithNickname(m.husbandName, m.husbandNickname)}
+            <Text style={styles.labelBlue}>Nome ELE: </Text>
+            {m.husbandName || "-"}
           </Text>
         </View>
-        <View style={styles.cellTel3part}>
+        <View style={styles.cellTel25}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Celular ELE: </Text>
+            <Text style={styles.labelBlue}>Tel.: </Text>
             {m.husbandPhone || "-"}
           </Text>
         </View>
-        <View style={styles.cellAniv3part}>
-          <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Nasc. ELE: </Text>
-            {formatDate(m.husbandBirthDate)}
-          </Text>
-        </View>
       </View>
 
-      {/* Row 2 (Ela): Nome (Apelido) ELA: (60%) / Celular ELA: (20%) / Nasc. ELA: (20%) */}
+      {/* Row 2 (Ela): Nome ELA: (75%) / Tel.: (25%) */}
       <View style={[styles.gridRow, styles.gridRowBorderBottom]}>
-        <View style={styles.cellNome3part}>
+        <View style={styles.cellNome75}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Nome (Apelido) ELA: </Text>
-            {formatNameWithNickname(m.wifeName, m.wifeNickname)}
+            <Text style={styles.labelBlue}>Nome ELA: </Text>
+            {m.wifeName || "-"}
           </Text>
         </View>
-        <View style={styles.cellTel3part}>
+        <View style={styles.cellTel25}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Celular ELA: </Text>
+            <Text style={styles.labelBlue}>Tel.: </Text>
             {m.wifePhone || "-"}
           </Text>
         </View>
-        <View style={styles.cellAniv3part}>
-          <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Nasc. ELA: </Text>
-            {formatDate(m.wifeBirthDate)}
-          </Text>
-        </View>
       </View>
 
-      {/* Row 3 (Emails): E-mail ELE: (50%) / E-mail ELA: (50%) */}
-      <View style={[styles.gridRow, styles.gridRowBorderBottom]}>
-        <View style={styles.cell2part}>
-          <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>E-mail ELE: </Text>
-            {m.husbandEmail || "-"}
-          </Text>
-        </View>
-        <View style={styles.cell2partLast}>
-          <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>E-mail ELA: </Text>
-            {m.wifeEmail || "-"}
-          </Text>
-        </View>
-      </View>
-
-      {/* Row 4 (Endereço): Endereço: (100% width) */}
+      {/* Row 3 (Endereço): End.: (100% width) */}
       <View style={styles.gridRow}>
         <View style={styles.cellFullWidth}>
           <Text style={styles.valueBlack}>
-            <Text style={styles.labelBlue}>Endereço: </Text>
+            <Text style={styles.labelBlue}>End.: </Text>
             {m.address || "-"}
           </Text>
         </View>
@@ -362,7 +315,7 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
     return (
       <Document>
         <Page size="A4" orientation="portrait" style={styles.pagePortrait}>
-          {teams.map((team) => {
+          {teams.map((team, teamIdx) => {
             // Group members by subcategory
             const grouped: Record<string, Member[]> = {};
             team.members.forEach((m) => {
@@ -383,12 +336,17 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
             });
 
             return (
-              <View key={team.id} style={styles.teamContainer}>
-                {/* Centralized Team Name with Yellow border bottom */}
+              <View key={team.id} style={styles.teamContainer} break={teamIdx > 0}>
+                {/* Centralized Team Name with Light Green border bottom */}
                 <View style={styles.teamTitleContainer} wrap={false}>
                   <Text style={styles.teamTitle}>
                     {team.name.toUpperCase()}
                   </Text>
+                </View>
+
+                {/* Espaço para foto da equipe */}
+                <View style={styles.photoPlaceholder} wrap={false}>
+                  <Text style={styles.photoText}>FOTO DA EQUIPE</Text>
                 </View>
 
                 {/* Subcategories */}
@@ -451,13 +409,11 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
   return (
     <Document>
       <Page size="A4" orientation="portrait" style={styles.pagePortrait}>
-        {teams.map((team) => {
+        {teams.map((team, teamIdx) => {
           // Flat list of individuals
           const flatList: {
             id: string;
             nomeCompleto: string;
-            apelido: string;
-            nascimento: Date | string | null;
             subcategory: string;
           }[] = [];
 
@@ -486,8 +442,6 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
                 flatList.push({
                   id: m.id,
                   nomeCompleto: m.name || "",
-                  apelido: m.nickname || "",
-                  nascimento: m.birthDate,
                   subcategory: sub,
                 });
               } else {
@@ -495,8 +449,6 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
                   flatList.push({
                     id: `${m.id}-ele`,
                     nomeCompleto: m.husbandName,
-                    apelido: m.husbandNickname || "",
-                    nascimento: m.husbandBirthDate,
                     subcategory: sub,
                   });
                 }
@@ -504,8 +456,6 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
                   flatList.push({
                     id: `${m.id}-ela`,
                     nomeCompleto: m.wifeName,
-                    apelido: m.wifeNickname || "",
-                    nascimento: m.wifeBirthDate,
                     subcategory: sub,
                   });
                 }
@@ -523,8 +473,8 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
           });
 
           return (
-            <View key={team.id} style={styles.teamContainer}>
-              {/* Centralized Team Name with Yellow border bottom */}
+            <View key={team.id} style={styles.teamContainer} break={teamIdx > 0}>
+              {/* Centralized Team Name with Light Green border bottom */}
               <View style={styles.teamTitleContainer} wrap={false}>
                 <Text style={styles.teamTitle}>
                   {team.name.toUpperCase()} (LGPD)
@@ -544,33 +494,17 @@ export function EJCPDFDocument({ teams, modo }: EJCPDFDocumentProps) {
 
                     {/* Header Row */}
                     <View style={styles.lgpdHeader}>
-                      <View style={{ width: LGPD_COL_WIDTHS.nome }}>
+                      <View style={{ width: "100%" }}>
                         <Text style={styles.lgpdHeaderCellText}>Nome Completo</Text>
-                      </View>
-                      <View style={{ width: LGPD_COL_WIDTHS.apelido }}>
-                        <Text style={styles.lgpdHeaderCellText}>Apelido</Text>
-                      </View>
-                      <View style={{ width: LGPD_COL_WIDTHS.nascimento }}>
-                        <Text style={styles.lgpdHeaderCellText}>Nascimento</Text>
                       </View>
                     </View>
 
                     {/* Data Rows */}
                     {subItems.map((item) => (
                       <View key={item.id} style={styles.lgpdRow}>
-                        <View style={{ width: LGPD_COL_WIDTHS.nome }}>
+                        <View style={{ width: "100%" }}>
                           <Text style={[styles.lgpdCellText, styles.lgpdCellTextBold]}>
                             {item.nomeCompleto}
-                          </Text>
-                        </View>
-                        <View style={{ width: LGPD_COL_WIDTHS.apelido }}>
-                          <Text style={styles.lgpdCellText}>
-                            {item.apelido || "-"}
-                          </Text>
-                        </View>
-                        <View style={{ width: LGPD_COL_WIDTHS.nascimento }}>
-                          <Text style={styles.lgpdCellText}>
-                            {formatDate(item.nascimento)}
                           </Text>
                         </View>
                       </View>

@@ -945,11 +945,11 @@ const teamsData = [
     ],
   },
   {
-    name: "Círculo Amarelo",
+    name: "Círculos",
     members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Círculo Amarelo",
         wifeName: "Tia Dayane Guerra Santos",
         wifePhone: "(61) 99234-1350",
         husbandName: "Tio Yuri Guerra de Araújo",
@@ -958,19 +958,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Círculo Amarelo",
         name: "Francisco Ítalo Rios Andrade",
         address: "SQN 306, Bloco B, Apto 106 - Asa Norte",
         phone: "(61) 98252-6221",
       },
-    ],
-  },
-  {
-    name: "Círculo Azul",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Círculo Azul",
         wifeName: "Tia Rosa Maria Lopes Pavão da Silva",
         wifePhone: "(61) 98303-3462",
         husbandName: "Tio Roberto Durão da Silva",
@@ -979,19 +974,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Círculo Azul",
         name: "Maria Eduarda Fontes Wisnesky",
         address: "SQNW 103 Bloco F Apto 103 - Noroeste",
         phone: "(61) 98230-7673",
       },
-    ],
-  },
-  {
-    name: "Círculo Rosa",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Círculo Rosa",
         wifeName: "Tia Thalita Viana da Silva Matos",
         wifePhone: "(61) 99988-4744",
         husbandName: "Tio Bruno Matos Galvão",
@@ -1000,19 +990,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Círculo Rosa",
         name: "Isadora da Silva Ferreira",
         address: "QN 7, Q. 14, Casa 26 - Riacho Fundo I",
         phone: "(61) 98603-3239",
       },
-    ],
-  },
-  {
-    name: "Círculo Verde",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Círculo Verde",
         wifeName: "Tia Vitória Cristina da Silva Miranda Santos",
         wifePhone: "(61) 98117-1974",
         husbandName: "Tio Lucas Sávio dos Santos",
@@ -1021,19 +1006,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Círculo Verde",
         name: "Maria Clara Pavão da Silva",
         address: "SQN 113, Bloco J, Apartamento 405, Asa Norte-DF",
         phone: "(61) 98304-4836",
       },
-    ],
-  },
-  {
-    name: "Círculo Vermelho",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Círculo Vermelho",
         wifeName: "Tia Graziela Furtado Scarpelli",
         wifePhone: "(61) 98116-5145",
         husbandName: "Tio Enrique Maia Rocha",
@@ -1042,7 +1022,7 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Círculo Vermelho",
         name: "Wallysson Cardoso Soares",
         address: "QR 3 Conjunto D Casa 58 - Candangolândia",
         phone: "(61) 99181-5980",
@@ -1312,11 +1292,11 @@ const teamsData = [
     ],
   },
   {
-    name: "Equipe Dirigente — Montagem",
+    name: "Equipe Dirigente",
     members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Montagem",
         wifeName: "Tia Jéssica Alves Pereira da Rocha",
         wifePhone: "(61) 98531-1948",
         husbandName: "Tio Jefferson Andrade da Rocha",
@@ -1325,19 +1305,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Montagem",
         name: "Amanda Victoria Prado Lages",
         address: "SGAN 915 Módulo F Cond. Parque Norte Brasília Bloco C Apto 9",
         phone: "(61) 99837-7337",
       },
-    ],
-  },
-  {
-    name: "Equipe Dirigente — Finanças",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Finanças",
         wifeName: "Tia Larissa Guimarães Portela",
         wifePhone: "(61) 98133-6984",
         husbandName: "Tio Daniel Cabral Portela",
@@ -1346,19 +1321,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Finanças",
         name: "Fabiano Sampaio Rocha",
         address: "Quadra 3, Conjunto 2, Casa 21, Taquari-DF",
         phone: "(61) 98299-1320",
       },
-    ],
-  },
-  {
-    name: "Equipe Dirigente — Palestra",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Palestra",
         wifeName: "Tia Cristina Fujita Barroso Muniz",
         wifePhone: "(61) 98213-3903",
         husbandName: "Tio André Sousa Barroso Fujita Barroso",
@@ -1367,19 +1337,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Palestra",
         name: "Gabriela C. de Andrade C. Reis",
         address: "SQN 306 Bloco D Apartamento 405 - Asa Norte",
         phone: "(61) 99906-8118",
       },
-    ],
-  },
-  {
-    name: "Equipe Dirigente — Fichas",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Fichas",
         wifeName: "Tia Michele Cabreira de Andrade Reis",
         wifePhone: "(61) 99906-8113",
         husbandName: "Tio Marcelo Corrêa Reis",
@@ -1388,19 +1353,14 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Fichas",
         name: "Aline Sousa",
         address: "Rua 1, Lote 14, Apartamento 8, Asa Sul-DF",
         phone: "(61) 98252-6048",
       },
-    ],
-  },
-  {
-    name: "Equipe Dirigente — Pós-Encontro",
-    members: [
       {
         type: "CASAL",
-        subcategory: "Casal coordenador",
+        subcategory: "Pós-Encontro",
         wifeName: "Tia Juliana Tessari Dias Rohr",
         wifePhone: "(61) 99139-0860",
         husbandName: "Tio José Ivanildo Dias Júnior",
@@ -1409,7 +1369,7 @@ const teamsData = [
       },
       {
         type: "JOVEM",
-        subcategory: "Jovens coordenadores",
+        subcategory: "Pós-Encontro",
         name: "Júlia de Oliveira Baur",
         address: "SQN 102 Bloco D Apartamento 101 - Asa Norte",
         phone: "(21) 98932-4675",
@@ -1491,6 +1451,25 @@ async function main() {
 
   for (const system of systems) {
     console.log(`Seeding teams and members for ${system}...`);
+
+    // Clean up legacy circle teams
+    const legacyCircleNames = [
+      "Círculo Amarelo",
+      "Círculo Azul",
+      "Círculo Rosa",
+      "Círculo Verde",
+      "Círculo Vermelho"
+    ];
+    for (const legacyName of legacyCircleNames) {
+      const legacyTeam = await prisma.team.findUnique({
+        where: { name_system: { name: legacyName, system: system } }
+      });
+      if (legacyTeam) {
+        await prisma.member.deleteMany({ where: { teamId: legacyTeam.id } });
+        await prisma.team.delete({ where: { id: legacyTeam.id } });
+        console.log(`Cleaned up legacy team: ${legacyName} (${system})`);
+      }
+    }
 
     for (const teamItem of teamsData) {
       const team = await prisma.team.upsert({

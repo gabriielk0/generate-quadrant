@@ -64,6 +64,21 @@ const styles = StyleSheet.create({
   subcategoryContainer: {
     marginBottom: 8,
   },
+  photoPlaceholder: {
+    borderWidth: 1,
+    borderColor: "#000000",
+    borderStyle: "dashed",
+    height: 120,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 12,
+    borderRadius: 4,
+  },
+  photoText: {
+    fontSize: 9,
+    fontFamily: "Helvetica-Bold",
+    color: "#4b5563",
+  },
   // Clean titles (no decoration, no borders, no bg)
   teamTitle: {
     fontSize: 12,
@@ -226,6 +241,16 @@ const LGPD_COL_WIDTHS = {
 
 export function QuadrantePDFDocument({ teams, modo }: QuadrantePDFDocumentProps) {
   const subcategoriesOrder = [
+    "Montagem",
+    "Finanças",
+    "Palestra",
+    "Fichas",
+    "Pós-Encontro",
+    "Círculo Amarelo",
+    "Círculo Azul",
+    "Círculo Rosa",
+    "Círculo Verde",
+    "Círculo Vermelho",
     "Casal coordenador",
     "Casal apoio",
     "Casais membros",
@@ -238,7 +263,7 @@ export function QuadrantePDFDocument({ teams, modo }: QuadrantePDFDocumentProps)
     return (
       <Document>
         <Page size="A4" orientation="portrait" style={styles.pagePortrait}>
-          {teams.map((team) => {
+          {teams.map((team, teamIdx) => {
             // Group members by subcategory
             const grouped: Record<string, Member[]> = {};
             team.members.forEach((m) => {
@@ -259,11 +284,16 @@ export function QuadrantePDFDocument({ teams, modo }: QuadrantePDFDocumentProps)
             });
 
             return (
-              <View key={team.id} style={styles.teamContainer}>
+              <View key={team.id} style={styles.teamContainer} break={teamIdx > 0}>
                 {/* Team Name Title - strictly upper case bold and no decorations */}
                 <Text style={styles.teamTitle}>
                   {team.name.toUpperCase()}
                 </Text>
+
+                {/* Espaço para foto da equipe */}
+                <View style={styles.photoPlaceholder} wrap={false}>
+                  <Text style={styles.photoText}>FOTO DA EQUIPE</Text>
+                </View>
 
                 {/* Subcategories and Member Boxes */}
                 {activeSubcategories.map((sub) => {
@@ -432,7 +462,7 @@ export function QuadrantePDFDocument({ teams, modo }: QuadrantePDFDocumentProps)
   return (
     <Document>
       <Page size="A4" orientation="portrait" style={styles.pagePortrait}>
-        {teams.map((team) => {
+        {teams.map((team, teamIdx) => {
           // Flatten list for LGPD
           const lgpdList: { id: string; name: string; papel: string }[] = [];
 
@@ -478,7 +508,7 @@ export function QuadrantePDFDocument({ teams, modo }: QuadrantePDFDocumentProps)
           };
 
           return (
-            <View key={team.id} style={styles.teamContainer}>
+            <View key={team.id} style={styles.teamContainer} break={teamIdx > 0}>
               {/* Team Name Title - strictly upper case bold and no decorations */}
               <Text style={styles.teamTitle}>
                 {team.name.toUpperCase()}
